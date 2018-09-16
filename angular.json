@@ -7,7 +7,7 @@
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
-      "prefix": "app",
+      "prefix": "",
       "schematics": {},
       "targets": {
         "build": {
@@ -20,12 +20,19 @@
             "tsConfig": "src/tsconfig.app.json",
             "assets": [
               "src/favicon.ico",
-              "src/assets"
+              "src/assets",{
+                "glob": "**/*",
+                "input": "node_modules/cesium/Build/Cesium",
+                "output": "./assets/cesium"
+              }
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.css",
+              "node_modules/cesium/Build/Cesium/Widgets/widgets.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/cesium/Build/Cesium/Cesium.js"
+            ]
           },
           "configurations": {
             "production": {
