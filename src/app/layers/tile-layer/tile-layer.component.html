@@ -1,0 +1,9 @@
+<ac-3d-tile-layer #tile-layer
+    [options]="{
+        url: tileSource.layerPath,
+        maximumScreenSpaceError: this.any() ? 2 : 1,
+        maximumNumberOfLoadedTiles: this.any() ? 800 : 1000
+    }"
+    [index]="tileIndex"
+    [show]="showTile">
+</ac-3d-tile-layer>

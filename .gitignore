@@ -10,7 +10,8 @@
 
 # IDEs and editors
 /.idea
-.project
+.proje
+ct
 .classpath
 .c9/
 *.launch
@@ -38,3 +39,4 @@ testem.log
 .DS_Store
 Thumbs.db
 Scene
+data

@@ -1,20 +1,12 @@
-<ac-map [sceneMode]="sceneMode" id="main-map">
-  <ac-map-layer-provider *ngIf="appSettingsService.showMapLayer" [provider]="arcGisMapServerProvider"
-                         [options]="{
-                              url : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer'
-                          }">
-  </ac-map-layer-provider>
-  <ac-3d-tile-layer
-      *ngIf="appSettingsService.show3dtiles"
-      [options]="{
-        url: 'https://beta.cesium.com/api/assets/1461?access_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiJkYWJmM2MzNS02OWM5LTQ3OWItYjEyYS0xZmNlODM5ZDNkMTYiLCJpZCI6NDQsImFzc2V0cyI6WzE0NjFdLCJpYXQiOjE0OTkyNjQ3NDN9.vuR75SqPDKcggvUrG_vpx0Av02jdiAxnnB1fNf-9f7s'
-      }"
-      [style]="{
-          color: 'mix(color(\'white\'), color(\'lightgreen\'), min(${area} / 10000.0, 1.0))'
-      }">
-  </ac-3d-tile-layer>
-  <maps-layer></maps-layer>
-  <!-- <toolbar-example></toolbar-example>
-  <context-menu-layer></context-menu-layer>
-  <keyboard-control-layer *ngIf="appSettingsService.keyboardControl"></keyboard-control-layer> -->
-</ac-map>
+<map-layer>
+  <ng-container *ngFor="let layerSource of layerSources">
+    <div [ngSwitch]="layerSource.layerType">
+      <tile-layer *ngSwitchCase="LayerType.TILE">
+      </tile-layer>
+      <kml-layer *ngSwitchCase="LayerType.KML">
+      </kml-layer>
+      <shp-layer *ngSwitchCase="LayerType.SHP">
+      </shp-layer>
+    </div>
+  </ng-container>
+</map-layer>
