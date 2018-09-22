@@ -6,15 +6,18 @@ import {
   AcNotification,
   AcLayerComponent,
   SceneMode,
-  ViewerConfiguration
+  ViewerConfiguration,
+  CesiumService
 } from 'angular-cesium';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { BaseLayer } from 'src/app/layers/base-layer';
 import { LayerSource } from 'src/app/models/layer-source.model';
+import { SmartPhoneService } from 'src/app/services/smart-phone.service';
 
 @Component({
   selector: 'tile-layer',
+  providers: [CesiumService],
   templateUrl: 'tile-layer.component.html'
 })
 export class TileLayerComponent implements AfterViewInit, OnInit, BaseLayer {
@@ -23,12 +26,12 @@ export class TileLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   tileSource: LayerSource;
   @Input()
   tileIndex: number;
-  @ViewChild('tile-layer')
+  @ViewChild('tileLayer')
   tileLayer: any;
   layerBoundingSphehre: any;
-  showTile = true;
+  tilesetInstance: any;
 
-  constructor(private appConf: AppConfigService) {
+  constructor(private appConf: AppConfigService, public smartPhoneSrv: SmartPhoneService) {
 
   }
 
@@ -41,21 +44,40 @@ export class TileLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   }
 
   public showLayer(): void {
-    this.showTile = true;
+    this.tilesetInstance.show = true;
   }
 
   public hideLayer(): void {
-    this.showTile = false;
+    this.tilesetInstance.show = false;
+  }
+
+  public isLayerVisible(): boolean {
+    return this.tilesetInstance.show;
   }
 
   public moveToLayer(): void {
     this.appConf.getAppViewer().camera.flyToBoundingSphere(this.layerBoundingSphehre);
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    this.tilesetInstance = new Cesium.Cesium3DTileset({
+      url: this.tileSource.layerPath,
+      maximumScreenSpaceError: this.smartPhoneSrv.any() ? 8 : 1,
+      maximumNumberOfLoadedTiles: this.smartPhoneSrv.any() ? 10 : 1000
+    });
+    this.tilesetInstance.allTilesLoaded.addEventListener(() => {
+      this.layerBoundingSphehre = this.tilesetInstance.boundingSphere;
+    });
+
+    this.appConf.getAppViewer().scene.primitives.add(
+      this.tilesetInstance
+    );
+
+    // TEMP
+    const bs = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(34.91930466, 32.48847722, 53.91294144), 1403.960694);
+    this.appConf.getAppViewer().camera.flyToBoundingSphere(bs);
+  }
   ngOnInit(): void {
-    // Get the 3d layer bounding sphere
-    const tilesetInstance = this.tileLayer.tilesetInstance;
-    this.layerBoundingSphehre = tilesetInstance.boundingSphere;
+
   }
 }

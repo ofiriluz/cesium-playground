@@ -20,9 +20,11 @@ import { LayersAPIService } from 'src/app/services/layers-api.service';
 })
 export class SHPLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   Cesium = Cesium;
-  showTile = true;
+  showShp = true;
   @Input()
   shpSource: LayerSource;
+  @Input()
+  shpIndex: number;
   dataSource: any;
 
   constructor(private appConf: AppConfigService, private layersService: LayersAPIService) {
@@ -38,11 +40,17 @@ export class SHPLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   }
 
   public showLayer(): void {
-    this.showTile = true;
+    this.dataSource.show = true;
+    this.showShp = true;
   }
 
   public hideLayer(): void {
-    this.showTile = false;
+    this.dataSource.show = false;
+    this.showShp = false;
+  }
+
+  public isLayerVisible(): boolean{
+    return this.showShp;
   }
 
   public moveToLayer(): void {
@@ -51,8 +59,8 @@ export class SHPLayerComponent implements AfterViewInit, OnInit, BaseLayer {
 
   ngAfterViewInit(): void {}
   ngOnInit(): void {
-    this.layersService.getShpAsGeoJson(this.shpSource.layerPath).toPromise().then((jsonData) => {
-      this.appConf.getAppViewer().dataSources.add(Cesium.GeoJsonDataSource.load(jsonData), {
+    this.layersService.getShpAsGeoJson(this.shpSource.layerPath).toPromise().then((geoPath) => {
+      this.appConf.getAppViewer().dataSources.add(Cesium.GeoJsonDataSource.load(geoPath), {
         stroke: Cesium.Color.HOTPINK,
         fill: Cesium.Color.PINK,
         strokeWidth: 3,

@@ -14,9 +14,18 @@ import { MapLayerComponent } from 'src/app/layers/map-layer/map-layer.component'
 import { KMLLayerComponent } from 'src/app/layers/kml-layer/kml-layer.component';
 import { SHPLayerComponent } from 'src/app/layers/shp-layer/shp-layer.component';
 import { TileLayerComponent } from 'src/app/layers/tile-layer/tile-layer.component';
+import { PointsLayerComponent } from 'src/app/layers/points-layer/points-layer.component';
+import { LayersListComponent } from 'src/app/layers-list/layers-list.component';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { LayersAPIService } from 'src/app/services/layers-api.service';
 import { SmartPhoneService } from 'src/app/services/smart-phone.service';
+
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSlideToggleModule,
+  MatListModule, MatSelectModule, MatOptionModule, MatButtonModule, MatFormFieldModule } from '@angular/material';
+import { GeometryEditorComponent } from 'src/app/geometry-editor/geometry-editor.component';
+import { GeoConverterService } from 'src/app/services/geo-convertor.service';
 
 const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
 
@@ -27,7 +36,10 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     MapLayerComponent,
     TileLayerComponent,
     KMLLayerComponent,
-    SHPLayerComponent
+    SHPLayerComponent,
+    LayersListComponent,
+    GeometryEditorComponent,
+    PointsLayerComponent
   ],
   imports: [
     BrowserModule,
@@ -35,13 +47,23 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     HttpClientModule,
     AngularCesiumModule.forRoot(),
     AngularCesiumWidgetsModule,
-    RouterModule.forRoot(appRoutes, { enableTracing: false })
+    RouterModule.forRoot(appRoutes, { enableTracing: false }),
+    NgbModule,
+    BrowserAnimationsModule,
+    MatSlideToggleModule,
+    MatListModule,
+    MatSelectModule,
+    MatOptionModule,
+    MatButtonModule,
+    MatFormFieldModule
   ],
   providers: [
     AppConfigService,
     LayersAPIService,
-    SmartPhoneService
+    SmartPhoneService,
+    GeoConverterService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents: [PointsLayerComponent]
 })
 export class AppModule {}

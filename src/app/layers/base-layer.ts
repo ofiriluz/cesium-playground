@@ -6,4 +6,5 @@ export interface BaseLayer {
   moveToLayer(): void;
   showLayer(): void;
   hideLayer(): void;
+  isLayerVisible(): boolean;
 }

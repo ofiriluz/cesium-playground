@@ -19,9 +19,11 @@ import { LayerSource } from 'src/app/models/layer-source.model';
 })
 export class KMLLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   Cesium = Cesium;
-  showTile = true;
+  showKml = true;
   @Input()
   kmlSource: LayerSource;
+  @Input()
+  kmlIndex: number;
   dataSource: any;
 
   constructor(private appConf: AppConfigService) {
@@ -37,11 +39,17 @@ export class KMLLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   }
 
   public showLayer(): void {
-    this.showTile = true;
+    this.dataSource.show = true;
+    this.showKml = true;
   }
 
   public hideLayer(): void {
-    this.showTile = false;
+    this.dataSource.show = false;
+    this.showKml = false;
+  }
+
+  public isLayerVisible(): boolean {
+    return this.showKml;
   }
 
   public moveToLayer(): void {
@@ -56,8 +64,8 @@ export class KMLLayerComponent implements AfterViewInit, OnInit, BaseLayer {
           canvas: this.appConf.getAppViewer().canvas
       })
     )
-    .then(function (dataSource) {
-        this.dataSource = dataSource;
+    .then((dataSource) => {
+      this.dataSource = dataSource;
     });
   }
 }

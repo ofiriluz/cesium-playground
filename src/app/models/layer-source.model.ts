@@ -1,7 +1,9 @@
 export enum LayerType {
   TILE,
   KML,
-  SHP
+  SHP,
+  MAP,
+  POINTS
 }
 
 export class LayerSource {
@@ -9,4 +11,5 @@ export class LayerSource {
   public layerIndex: number;
   public layerType: LayerType;
   public layerName: string;
+  public layerProps: any;
 }

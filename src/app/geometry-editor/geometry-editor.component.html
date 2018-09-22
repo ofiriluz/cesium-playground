@@ -1,0 +1,36 @@
+<div class="container geometry-editor">
+  <div class="row">
+    <mat-form-field class="col-12 mt-3 md-3 px-3">
+      <mat-select placeholder="Pick the geometry type" [(ngModel)]="geometryPick" (selectionChange)="onGeomTypeChanged($event)">
+        <mat-option *ngFor="let geom of geometryTypes" [value]="geom">
+          {{geom}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+  <div class="row" *ngIf="entities.length === 0">
+    <label class="geometry-info-label col-12 md-4">
+      Add the picked geometry to the map, info will be shown here
+    </label>
+  </div>
+  <mat-list *ngIf="entities.length > 0">
+    <mat-list-item *ngFor="let entity of entities; let i = index">
+      <label class="row"><b>Point #{{i+1}}</b></label>
+      <ul>
+        <li class="row">
+            <b>WGS84</b>: [{{entity.wgs.E.toFixed(2)}}, {{entity.wgs.N.toFixed(2)}}, {{entity.deg.z}}]
+        </li>
+        <li class="row">
+            <b>ITM</b>: [{{entity.xyz.x}}, {{entity.xyz.y}}, {{entity.xyz.z}}]
+        </li>
+      </ul>
+    </mat-list-item>
+  </mat-list>
+  <div class="row-fluid">
+    <button mat-flat-button color="accent" class="col-5 geometry-btn"
+    [disabled]="entities.length == 0" (click)="onLayerSave()">Save Layer</button>
+    <button mat-flat-button color="accent" class="col-5 pull-right geometry-btn"
+    (click)="onLayerReset()">Reset</button>
+  </div>
+  <br/>
+</div>

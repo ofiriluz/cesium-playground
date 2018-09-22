@@ -1,12 +1,46 @@
-<map-layer>
-  <ng-container *ngFor="let layerSource of layerSources">
-    <div [ngSwitch]="layerSource.layerType">
-      <tile-layer *ngSwitchCase="LayerType.TILE">
+<map-layer #mapLayer>
+  <ng-container *ngFor="let layerSource of layerSources; let i = index">
+    <ng-container [ngSwitch]="layerSource.layerType">
+      <tile-layer
+        *ngSwitchCase="LayerType.TILE"
+        #layerComp
+        [tileSource]="layerSource"
+        [tileIndex]="i">
       </tile-layer>
-      <kml-layer *ngSwitchCase="LayerType.KML">
+      <kml-layer
+        *ngSwitchCase="LayerType.KML"
+        #layerComp
+        [kmlSource]="layerSource"
+        [kmlIndex]="i">
       </kml-layer>
-      <shp-layer *ngSwitchCase="LayerType.SHP">
+      <shp-layer
+        *ngSwitchCase="LayerType.SHP"
+        #layerComp
+        [shpSource]="layerSource"
+        [shpIndex]="i">
       </shp-layer>
-    </div>
+    </ng-container>
   </ng-container>
 </map-layer>
+<div class="toolbar-left">
+  <div>
+      <button id="layers-list-btn" class="fa fa-list-ul toolbar-btn"
+        [attr.aria-expanded]="!showLayersList" aria-controls="layersListCollapse"
+        (click)="showLayersList = !showLayersList">
+      </button>
+      <button id="geometry-editor-btn" class="fa fa-edit toolbar-btn"
+        [attr.aria-expanded]="!showGeometryEditor" aria-controls="geometryEditorCollapse"
+        (click)="showGeometryEditor = !showGeometryEditor">
+      </button>
+  </div>
+  <div id="layersListCollapse" [ngbCollapse]="!showLayersList" style="margin-top: 38px;">
+      <layers-list [staticLayers]="staticLayers" [editableLayers]="editableLayers"></layers-list>
+  </div>
+  <div id="geometryEditorCollapse" [ngbCollapse]="!showGeometryEditor" style="margin-top: 38px;">
+      <geometry-editor (geometryTypeChanged)="onGeometryTypeChanged($event)"
+                        (entityAdded)="onEntityAdded($event)"
+                        (layerSaved)="onLayerSaved()"
+                        (layerReset)="onLayerReset()">
+      </geometry-editor>
+  </div>
+</div>

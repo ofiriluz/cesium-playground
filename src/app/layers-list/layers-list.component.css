@@ -1,0 +1,13 @@
+.layer-list {
+  background: rgba(100, 100, 100, 0.75)
+}
+.layer-label {
+  font: 15px arial, sans-serif;
+  color: white;
+}
+
+.remove-layer-btn {
+  text-decoration: none;
+  background-color: none;
+  color: rgb(233, 30, 99);
+}

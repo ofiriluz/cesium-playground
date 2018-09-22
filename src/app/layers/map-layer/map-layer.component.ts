@@ -6,40 +6,48 @@ import {
   AcNotification,
   AcLayerComponent,
   SceneMode,
-  ViewerConfiguration
+  ViewerConfiguration,
+  CesiumService,
+  AcMapComponent
 } from 'angular-cesium';
 import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { AppConfigService } from 'src/app/services/app-config.service';
+import { BaseLayer } from 'src/app/layers/base-layer';
+import { LayerSource, LayerType } from 'src/app/models/layer-source.model';
 
 @Component({
   selector: 'map-layer',
-  providers: [ViewerConfiguration],
+  providers: [ViewerConfiguration, CesiumService],
   templateUrl: 'map-layer.component.html'
 })
-export class MapLayerComponent implements AfterViewInit, OnInit {
+export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   Cesium = Cesium;
   sceneMode = SceneMode.SCENE3D;
-  // boundingSphere = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(34.91930466, 32.48847722, 53.91294144), 1403.960694);
-  // boundingSphere = new Cesium.BoundingSphere(
-  //   Cesium.Cartesian3.fromDegrees(34.94329436, 32.57149369, 169.0831419),
-  //   117.9757447
-  // );
+  @ViewChild('mapLayer')
+  mapLayer: AcMapComponent;
+  layerSource: LayerSource;
+  public showMap = true;
 
   constructor(private viewerConf: ViewerConfiguration, private appService: AppConfigService) {
+    this.layerSource = new LayerSource();
+    this.layerSource.layerIndex = 0;
+    this.layerSource.layerName = 'MAP';
+    this.layerSource.layerPath = '';
+    this.layerSource.layerType = LayerType.MAP;
     const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
     const imageryModels = Cesium.createDefaultImageryProviderViewModels();
     viewerConf.viewerOptions = {
-      selectionIndicator: false,
+      selectionIndicator: true,
       timeline: false,
-      infoBox: false,
-      fullscreenButton: false,
+      infoBox: true,
+      fullscreenButton: true,
       baseLayerPicker: true,
       animation: false,
-      shouldAnimate: false,
+      shouldAnimate: true,
       homeButton: true,
-      geocoder: false,
+      geocoder: true,
       scene3DOnly: true,
-      navigationHelpButton: false,
+      navigationHelpButton: true,
       navigationInstructionsInitiallyVisible: false,
       selectedImageryProviderViewModel: imageryModels[9],
       terrainProviderViewModels: terrainModels,
@@ -56,6 +64,30 @@ export class MapLayerComponent implements AfterViewInit, OnInit {
       );
       viewer.bottomContainer.remove();
     };
+  }
+
+  public getLayerEntity() {
+    return this.mapLayer;
+  }
+
+  public getLayerMeta(): LayerSource {
+    return this.layerSource;
+  }
+
+  public moveToLayer(): void {
+    return;
+  }
+
+  public showLayer(): void {
+    this.showMap = true;
+  }
+
+  public hideLayer(): void {
+    this.showMap = false;
+  }
+
+  public isLayerVisible(): boolean{
+    return this.showMap;
   }
 
   ngAfterViewInit(): void {}
