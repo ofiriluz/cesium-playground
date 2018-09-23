@@ -14,6 +14,7 @@ import { LayerSource, LayerType } from 'src/app/models/layer-source.model';
 import { BaseLayer } from 'src/app/layers/base-layer';
 import { PointsLayerComponent } from 'src/app/layers/points-layer/points-layer.component';
 import { EditableLayer } from 'src/app/layers/editable-layer';
+import { PolylineLayerComponent } from 'src/app/layers/polyline-layer/polyline-layer.component';
 
 declare var jquery: any;
 declare var $: any;
@@ -51,11 +52,11 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     });
   }
 
-  private getComponentByType(type: string) {
+  private getComponentFactory(type: string) {
     if (type === 'Points') {
-      return PointsLayerComponent;
-    } else if (type === 'Polygon') {
-      // TODO
+      return this.factoryResolve.resolveComponentFactory(PointsLayerComponent);
+    } else if (type === 'Polyline') {
+      return this.factoryResolve.resolveComponentFactory(PolylineLayerComponent);
     }
   }
 
@@ -66,8 +67,12 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
       component.instance.pointsSource.layerPath = '';
       component.instance.pointsSource.layerType = LayerType.POINTS;
       component.instance.pointsSource.layerProps = {};
-    } else if (type === 'Polygon') {
-      // TODO
+    } else if (type === 'Polyline') {
+      component.instance.polylineSource = new LayerSource();
+      component.instance.polylineSource.layerName = 'Polyline Layer';
+      component.instance.polylineSource.layerPath = '';
+      component.instance.polylineSource.layerType = LayerType.POLYLINE;
+      component.instance.polylineSource.layerProps = {};
     }
   }
 
@@ -81,8 +86,7 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   }
 
   public onGeometryTypeChanged(type: string) {
-    const componentType = this.getComponentByType(type);
-    const factory = this.factoryResolve.resolveComponentFactory(componentType);
+    const factory = this.getComponentFactory(type);
     const component = factory.create(this.viewContainerRef.parentInjector);
     this.viewContainerRef.insert(component.hostView);
     this.handlePostCreation(component, type);

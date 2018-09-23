@@ -15,6 +15,7 @@ import { KMLLayerComponent } from 'src/app/layers/kml-layer/kml-layer.component'
 import { SHPLayerComponent } from 'src/app/layers/shp-layer/shp-layer.component';
 import { TileLayerComponent } from 'src/app/layers/tile-layer/tile-layer.component';
 import { PointsLayerComponent } from 'src/app/layers/points-layer/points-layer.component';
+import { PolylineLayerComponent } from 'src/app/layers/polyline-layer/polyline-layer.component';
 import { LayersListComponent } from 'src/app/layers-list/layers-list.component';
 import { MouseCoordsComponent } from 'src/app/mouse-coords/mouse-coords.component';
 import { AppConfigService } from 'src/app/services/app-config.service';
@@ -41,6 +42,7 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     LayersListComponent,
     GeometryEditorComponent,
     PointsLayerComponent,
+    PolylineLayerComponent,
     MouseCoordsComponent
   ],
   imports: [
@@ -68,6 +70,6 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     GeoConverterService
   ],
   bootstrap: [AppComponent],
-  entryComponents: [PointsLayerComponent]
+  entryComponents: [PointsLayerComponent, PolylineLayerComponent]
 })
 export class AppModule {}

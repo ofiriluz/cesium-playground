@@ -3,7 +3,8 @@ export enum LayerType {
   KML,
   SHP,
   MAP,
-  POINTS
+  POINTS,
+  POLYLINE
 }
 
 export class LayerSource {

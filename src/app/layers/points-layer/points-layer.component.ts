@@ -64,9 +64,9 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
     this.pointEntities.push(this.appConf.getAppViewer().entities.add({
       position: entity,
       point: {
-        pixelSize : 10,
-        color : Cesium.Color.BLACK,
-        outlineColor : Cesium.Color.WHITE,
+        pixelSize : 15,
+        color : Cesium.Color.PURPLE,
+        outlineColor : Cesium.Color.BLACK,
         outlineWidth : 2
       }
     }));

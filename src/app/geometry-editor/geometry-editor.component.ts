@@ -1,4 +1,4 @@
-import { EventEmitter, ViewChild, AfterViewInit, Input } from '@angular/core';
+import { EventEmitter, ViewChild, AfterViewInit, Input, ElementRef } from '@angular/core';
 import { Component, OnInit, Output } from '@angular/core';
 import { Observable, Subscriber } from 'rxjs';
 import { LayersAPIService } from 'src/app/services/layers-api.service';
@@ -23,7 +23,7 @@ export class LayerNameErrorStateMatcher implements ErrorStateMatcher {
 })
 export class GeometryEditorComponent implements OnInit, AfterViewInit {
   Cesium = Cesium;
-  public geometryTypes = ['Points', 'Line'];
+  public geometryTypes = ['Points', 'Polyline'];
   public geometryPick = 'None';
   public entities = [];
   @Output()
@@ -52,15 +52,17 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {}
-  ngOnInit(): void {
-
-  }
+  ngOnInit(): void {}
 
   public updateLayerName(event: any) {
     this.layerName = event.target.value;
   }
 
   public onLayerSave() {
+    if (this.layerName.trim() === '') {
+      return;
+    }
+
     if (this.isLayerNameValid !== undefined) {
       if (!this.isLayerNameValid(this.layerName)) {
         this.layerNameExists = true;
@@ -69,9 +71,10 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
     }
 
     this.layerNameExists = false;
-    this.layerSaved.emit(this.layerName);
+    this.layerSaved.emit(this.layerName.trim());
     this.entities = [];
     this.layerSavedToViewer = true;
+    this.layerName = '';
   }
 
   public onLayerReset() {
@@ -79,6 +82,7 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
     this.layerReset.emit();
     this.entities = [];
     this.layerSavedToViewer = false;
+    this.layerName = '';
   }
 
   public onGeomTypeChanged(type) {
@@ -88,9 +92,9 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
     this.cesiumSelectionHandler = new Cesium.ScreenSpaceEventHandler(this.appConf.getAppViewer().scene.canvas);
     this.cesiumSelectionHandler.setInputAction((click) => {
       const position = Cesium.Cartographic.fromCartesian(this.appConf.getAppViewer().scene.pickPosition(click.position));
-      const xyzPos = {x: Cesium.Math.toDegrees(position.longitude).toFixed(5),
-                    y: Cesium.Math.toDegrees(position.latitude).toFixed(5),
-                    z: position.height.toFixed(2)};
+      const xyzPos = {x: Cesium.Math.toDegrees(position.longitude),
+                    y: Cesium.Math.toDegrees(position.latitude),
+                    z: position.height};
       const fromDeg = new Cesium.Cartesian3.fromDegrees(xyzPos.x, xyzPos.y, xyzPos.z);
       this.entityAdded.emit(fromDeg);
       this.entities.push({wgs: xyzPos, deg: fromDeg, itm: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)});
