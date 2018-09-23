@@ -14,7 +14,7 @@
       <mat-list-item *ngFor="let layer of editableLayers" class="row">
         <label class="layer-label col-8">{{layer.getLayerMeta().layerName}}</label>
         <mat-slide-toggle class="col-2" style="" [checked]='layer.isLayerVisible()' (change)='updateLayerVisbility(layer)'></mat-slide-toggle>
-        <a class="fa fa-2x fa-remove remove-layer-btn" href="javascript:;" (click)="removeLayer(layer)"></a>
+        <a class="fa fa-2x fa-remove remove-layer-btn" href="javascript:;" (click)="onRemoveLayer(layer)"></a>
       </mat-list-item>
     </mat-list>
   </div>

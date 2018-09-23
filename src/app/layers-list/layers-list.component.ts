@@ -16,6 +16,8 @@ export class LayersListComponent implements OnInit, AfterViewInit {
   public staticLayers: BaseLayer[];
   @Input()
   public editableLayers: EditableLayer[];
+  @Output()
+  public removeLayer = new EventEmitter<EditableLayer>();
 
   constructor() {
 
@@ -23,6 +25,10 @@ export class LayersListComponent implements OnInit, AfterViewInit {
 
   public updateLayerVisbility(layer: BaseLayer) {
     layer.isLayerVisible() ? layer.hideLayer() : layer.showLayer();
+  }
+
+  public onRemoveLayer(layer: EditableLayer) {
+    this.removeLayer.emit(layer);
   }
 
   ngAfterViewInit(): void {}

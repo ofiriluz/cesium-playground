@@ -19,7 +19,6 @@ export class LayersAPIService {
   public getShpAsGeoJson(shpPath: string) {
     const params = new HttpParams();
     params.append('shpPath', shpPath);
-    console.log(shpPath);
     return this.http.get(
       CLIENT_HOST + ':' + CLIENT_PORT + CLIENT_SHP_AS_GEO_JSON_API,
       {

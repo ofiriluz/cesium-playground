@@ -1,0 +1,8 @@
+<div class="container-fluid mouse-coords-div" *ngIf="currentPosition !== null">
+  <div class="row">
+    <label class="col-12 coords-label"><b>WGS84:</b> [{{currentPosition.wgs.x}}, {{currentPosition.wgs.y}}, {{currentPosition.wgs.z}}]</label>
+  </div>
+  <div class="row">
+    <label class="col-12 coords-label"><b>ITM:</b> [{{currentPosition.itm.E.toFixed(2)}}, {{currentPosition.itm.N.toFixed(2)}}, {{currentPosition.deg.z.toFixed(2)}}]</label>
+  </div>
+</div>

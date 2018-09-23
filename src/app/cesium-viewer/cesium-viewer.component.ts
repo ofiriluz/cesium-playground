@@ -71,6 +71,15 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     }
   }
 
+  public checkLayerName(value: string): boolean {
+    for (let i = 0; i < this.editableLayers.length; i++) {
+      if (this.editableLayers[i].getLayerMeta().layerName === value) {
+        return false;
+      }
+    }
+    return true;
+  }
+
   public onGeometryTypeChanged(type: string) {
     const componentType = this.getComponentByType(type);
     const factory = this.factoryResolve.resolveComponentFactory(componentType);
@@ -84,7 +93,8 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     this.editedLayer.addEntity(entity);
   }
 
-  public onLayerSaved() {
+  public onLayerSaved(layerName: string) {
+    this.editedLayer.getLayerMeta().layerName = layerName;
     this.editableLayers.push(this.editedLayer);
   }
 

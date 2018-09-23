@@ -1,27 +1,43 @@
-<div class="container geometry-editor">
+<form class="container geometry-editor">
   <div class="row">
     <mat-form-field class="col-12 mt-3 md-3 px-3">
-      <mat-select placeholder="Pick the geometry type" [(ngModel)]="geometryPick" (selectionChange)="onGeomTypeChanged($event)">
+      <mat-select placeholder="Pick the geometry type" name="layerType" [(ngModel)]="geometryPick" (selectionChange)="onGeomTypeChanged($event)">
         <mat-option *ngFor="let geom of geometryTypes" [value]="geom">
           {{geom}}
         </mat-option>
       </mat-select>
     </mat-form-field>
   </div>
-  <div class="row" *ngIf="entities.length === 0">
+  <div class="row">
+    <mat-form-field class="col-12 md-3 px-3">
+      <input matInput placeholder="Layer Name" name="layerName" type="text" (keyup)="updateLayerName($event)" [errorStateMatcher]="matcher" [formControl]="layerNameFormControl">
+      <mat-error *ngIf="layerNameFormControl.hasError('required')"></mat-error>
+    </mat-form-field>
+  </div>
+  <div class="row" *ngIf="layerNameExists">
+    <label class="geometry-info-label col-12 md-4" style="color: red;">
+      <b>Layer name already exists.</b>
+    </label>
+  </div>
+  <div class="row" *ngIf="entities.length === 0 && !layerSavedToViewer">
     <label class="geometry-info-label col-12 md-4">
       Add the picked geometry to the map, info will be shown here
     </label>
   </div>
+  <div class="row" *ngIf="entities.length === 0 && layerSavedToViewer">
+    <label class="geometry-info-label col-12 md-4">
+      Layer Saved!
+    </label>
+  </div>
   <mat-list *ngIf="entities.length > 0">
     <mat-list-item *ngFor="let entity of entities; let i = index">
-      <label class="row"><b>Point #{{i+1}}</b></label>
+      <label class="row geometry-info-label h-100"><b>#{{i+1}}</b></label>
       <ul>
-        <li class="row">
-            <b>WGS84</b>: [{{entity.wgs.E.toFixed(2)}}, {{entity.wgs.N.toFixed(2)}}, {{entity.deg.z}}]
+        <li class="row geometry-info-label">
+            <label><b>WGS84</b>: [{{entity.wgs.x}}, {{entity.wgs.y}}, {{entity.wgs.z}}]</label>
         </li>
-        <li class="row">
-            <b>ITM</b>: [{{entity.xyz.x}}, {{entity.xyz.y}}, {{entity.xyz.z}}]
+        <li class="row geometry-info-label">
+            <label><b>ITM</b>: [{{entity.itm.E.toFixed(2)}}, {{entity.itm.N.toFixed(2)}}, {{entity.deg.z.toFixed(2)}}]</label>
         </li>
       </ul>
     </mat-list-item>
@@ -33,4 +49,4 @@
     (click)="onLayerReset()">Reset</button>
   </div>
   <br/>
-</div>
+</form>

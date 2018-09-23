@@ -1,0 +1,9 @@
+.mouse-coords-div {
+  height: 38px;
+  background: rgba(100, 100, 100, 0.75)
+}
+
+.coords-label {
+  font: 12px arial, sans-serif;
+  color: white;
+}

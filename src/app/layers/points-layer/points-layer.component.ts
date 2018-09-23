@@ -80,11 +80,12 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
 
   ngAfterViewInit(): void {}
   ngOnInit(): void {
-    console.log(this.pointsSource);
-    if (this.pointsSource !== undefined
-      && Object.prototype.hasOwnProperty.call(this.pointsSource.layerProps, 'points')) {
-    this.pointsSource.layerProps['points'].forEach(point => {
-      this.addEntity(point);
-    });
+      console.log(this.pointsSource);
+      if (this.pointsSource !== undefined
+        && Object.prototype.hasOwnProperty.call(this.pointsSource.layerProps, 'points')) {
+      this.pointsSource.layerProps['points'].forEach(point => {
+        this.addEntity(point);
+      });
+    }
   }
 }

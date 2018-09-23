@@ -15,14 +15,15 @@ import { GeoConverterService } from 'src/app/services/geo-convertor.service';
 })
 export class MouseCoordsComponent implements OnInit, AfterViewInit {
   mouseHandler: any;
-  public currentPosition = {xyz: {x: 0, y: 0, z: 0}, wgs: {E: 0, N: 0}};
+  public currentPosition = null;
 
   private updateCurrentPosition(click) {
-    const position = Cesium.Cartographic.fromCartesian(this.appConf.getAppViewer().scene.pickPosition(click.position));
+    const position = Cesium.Cartographic.fromCartesian(this.appConf.getAppViewer().scene.pickPosition(click.endPosition));
     const xyzPos = {x: Cesium.Math.toDegrees(position.longitude).toFixed(5),
       y: Cesium.Math.toDegrees(position.latitude).toFixed(5),
       z: position.height.toFixed(2)};
-    this.currentPosition = {xyz: xyzPos, wgs: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)};
+    const fromDeg = new Cesium.Cartesian3.fromDegrees(xyzPos.x, xyzPos.y, xyzPos.z);
+    this.currentPosition = {wgs: xyzPos, deg: fromDeg, itm: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)};
   }
 
   constructor(private appConf: AppConfigService, private geoService: GeoConverterService) {
@@ -33,7 +34,9 @@ export class MouseCoordsComponent implements OnInit, AfterViewInit {
   ngOnInit(): void {
     this.mouseHandler = new Cesium.ScreenSpaceEventHandler(this.appConf.getAppViewer().scene.canvas);
     this.mouseHandler.setInputAction((click) => {
-      this.updateCurrentPosition(click);
+      try {
+        this.updateCurrentPosition(click);
+      } catch (e) {}
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
   }
 }

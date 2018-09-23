@@ -11,4 +11,16 @@
   position: absolute;
   top: 5px;
   left: 5px;
+
+}
+.toolbar-buttons {
+  margin-bottom: 40px;
+}
+.mouse-coords {
+  float: left;
+  margin-left: 5px;
+}
+
+.collapsed-multi-margin {
+  margin-bottom: 10px;
 }

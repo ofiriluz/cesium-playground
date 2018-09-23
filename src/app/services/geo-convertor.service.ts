@@ -79,22 +79,6 @@ export class GeoConverterService {
     )
   ];
 
-  private sin2(t) {
-    return Math.sin(t) * Math.sin(t);
-  }
-
-  private cos2(t) {
-    return Math.cos(t) * Math.cos(t);
-  }
-
-  private tan2(t) {
-    return Math.tan(t) * Math.tan(t);
-  }
-
-  private tan4(t) {
-    return Math.tan2(t) * Math.tan2(t);
-  }
-
   private wgs842itm(t, a) {
     const n = {
       lat: (t * Math.PI) / 180,
@@ -117,8 +101,8 @@ export class GeoConverterService {
     return (
       this.Molodensky(n, this.eDatum.eGRS80, this.eDatum.eWGS84),
       {
-        lat: (180 * n.olat) / Math.PI,
-        lon: (180 * n.olon) / Math.PI
+        lat: (180 * n.lat) / Math.PI,
+        lon: (180 * n.lon) / Math.PI
       }
     );
   }

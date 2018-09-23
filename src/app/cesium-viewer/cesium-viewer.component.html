@@ -23,7 +23,7 @@
   </ng-container>
 </map-layer>
 <div class="toolbar-left">
-  <div>
+  <div class="toolbar-buttons">
       <button id="layers-list-btn" class="fa fa-list-ul toolbar-btn"
         [attr.aria-expanded]="!showLayersList" aria-controls="layersListCollapse"
         (click)="showLayersList = !showLayersList">
@@ -32,15 +32,18 @@
         [attr.aria-expanded]="!showGeometryEditor" aria-controls="geometryEditorCollapse"
         (click)="showGeometryEditor = !showGeometryEditor">
       </button>
+      <mouse-coords class="mouse-coords"></mouse-coords>
   </div>
-  <div id="layersListCollapse" [ngbCollapse]="!showLayersList" style="margin-top: 38px;">
-      <layers-list [staticLayers]="staticLayers" [editableLayers]="editableLayers"></layers-list>
+  <div id="layersListCollapse" [ngbCollapse]="!showLayersList"  class="collapsed-multi-margin">
+      <layers-list [staticLayers]="staticLayers"
+                   [editableLayers]="editableLayers"></layers-list>
   </div>
-  <div id="geometryEditorCollapse" [ngbCollapse]="!showGeometryEditor" style="margin-top: 38px;">
-      <geometry-editor (geometryTypeChanged)="onGeometryTypeChanged($event)"
+  <div id="geometryEditorCollapse" [ngbCollapse]="!showGeometryEditor" class="collapsed-multi-margin">
+      <geometry-editor  (geometryTypeChanged)="onGeometryTypeChanged($event)"
                         (entityAdded)="onEntityAdded($event)"
-                        (layerSaved)="onLayerSaved()"
-                        (layerReset)="onLayerReset()">
+                        (layerSaved)="onLayerSaved($event)"
+                        (layerReset)="onLayerReset()"
+                        [isLayerNameValid]="checkLayerName.bind(this)">
       </geometry-editor>
   </div>
 </div>

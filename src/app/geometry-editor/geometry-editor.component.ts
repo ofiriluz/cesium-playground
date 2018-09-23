@@ -6,6 +6,15 @@ import { LayerSource, LayerType } from 'src/app/models/layer-source.model';
 import { BaseLayer } from 'src/app/layers/base-layer';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { GeoConverterService } from 'src/app/services/geo-convertor.service';
+import { ErrorStateMatcher } from '@angular/material';
+import { FormControl, NgForm, FormGroupDirective, Validators } from '@angular/forms';
+
+export class LayerNameErrorStateMatcher implements ErrorStateMatcher {
+  isErrorState(control: FormControl | null, form: FormGroupDirective | NgForm | null): boolean {
+    const isSubmitted = form && form.submitted;
+    return !!(control && control.invalid && (control.dirty || control.touched || isSubmitted));
+  }
+}
 
 @Component({
   selector: 'geometry-editor',
@@ -23,7 +32,18 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
   public entityAdded = new EventEmitter<any>();
   @Output()
   public layerSaved = new EventEmitter<any>();
+  @Output()
   public layerReset = new EventEmitter<any>();
+  @Input()
+  public isLayerNameValid: (value: string) => boolean;
+  public layerName = '';
+  public layerSavedToViewer = false;
+  public layerNameExists = false;
+
+  matcher = new LayerNameErrorStateMatcher();
+  layerNameFormControl = new FormControl('', [
+    Validators.required
+  ]);
 
   cesiumSelectionHandler: any;
 
@@ -36,12 +56,29 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
 
   }
 
+  public updateLayerName(event: any) {
+    this.layerName = event.target.value;
+  }
+
   public onLayerSave() {
-    this.layerSaved.emit();
+    if (this.isLayerNameValid !== undefined) {
+      if (!this.isLayerNameValid(this.layerName)) {
+        this.layerNameExists = true;
+        return;
+      }
+    }
+
+    this.layerNameExists = false;
+    this.layerSaved.emit(this.layerName);
+    this.entities = [];
+    this.layerSavedToViewer = true;
   }
 
   public onLayerReset() {
+    this.layerNameExists = false;
     this.layerReset.emit();
+    this.entities = [];
+    this.layerSavedToViewer = false;
   }
 
   public onGeomTypeChanged(type) {
@@ -56,7 +93,8 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
                     z: position.height.toFixed(2)};
       const fromDeg = new Cesium.Cartesian3.fromDegrees(xyzPos.x, xyzPos.y, xyzPos.z);
       this.entityAdded.emit(fromDeg);
-      this.entities.push({xyz: xyzPos, deg: fromDeg, wgs: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)});
+      this.entities.push({wgs: xyzPos, deg: fromDeg, itm: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)});
+      this.layerSavedToViewer = false;
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.geometryTypeChanged.emit(type.value);
   }
