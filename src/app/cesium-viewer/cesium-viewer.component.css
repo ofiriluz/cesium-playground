@@ -24,3 +24,15 @@
 .collapsed-multi-margin {
   margin-bottom: 10px;
 }
+
+.screenshot-modal-lg .modal-dialog{
+  display: table;
+  position: relative;
+  margin: 0 auto;
+  top: calc(50% - 24px);
+}
+
+.screenshot-modal-lg .modal-dialog .modal-content{
+  background-color: transparent;
+  border: none;
+}

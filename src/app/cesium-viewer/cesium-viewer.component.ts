@@ -15,6 +15,8 @@ import { BaseLayer } from 'src/app/layers/base-layer';
 import { PointsLayerComponent } from 'src/app/layers/points-layer/points-layer.component';
 import { EditableLayer } from 'src/app/layers/editable-layer';
 import { PolylineLayerComponent } from 'src/app/layers/polyline-layer/polyline-layer.component';
+import { AppConfigService } from 'src/app/services/app-config.service';
+import { saveAs } from 'file-saver';
 
 declare var jquery: any;
 declare var $: any;
@@ -37,6 +39,7 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   editedLayer: EditableLayer;
 
   constructor(private layersService: LayersAPIService,
+              private appConf: AppConfigService,
               private factoryResolve: ComponentFactoryResolver,
               private viewContainerRef: ViewContainerRef) {
     this.staticLayers = new QueryList<BaseLayer>();
@@ -104,5 +107,17 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
 
   public onLayerReset() {
     this.editedLayer.clearEntities();
+  }
+
+  public takeScreenshot() {
+    $('.modal').modal('show');
+    const canvas = this.appConf.getAppViewer().scene.canvas;
+    this.appConf.getAppViewer().render();
+
+    canvas.toBlob((blob) => {
+      const currDate = new Date();
+      saveAs(blob, 'Screenshot-' + currDate.getHours() + '-' + currDate.getMinutes() + '-' + currDate.getSeconds() + '.png');
+      $('.modal').modal('hide');
+    });
   }
 }

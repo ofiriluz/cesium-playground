@@ -56,8 +56,19 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
   }
 
   public moveToLayer(): void {
-    // TODO
-    // this.appConf.getAppViewer().flyTo(this.pointEntity);
+    // Calculate the center of all the polyline points
+    const center = {x: 0, y: 0, z: 0};
+    this.pointEntities.forEach(element => {
+      center.x += element.position.x;
+      center.y += element.position.y;
+      center.z += element.position.z;
+    });
+
+    center.x /= this.pointEntities.length;
+    center.y /= this.pointEntities.length;
+    center.z /= this.pointEntities.length;
+
+    this.appConf.getAppViewer().flyTo(center);
   }
 
   addEntity(entity: any) {
@@ -72,10 +83,20 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
     }));
   }
   removeEntity(entity: any) {
-    // TODO
+    this.appConf.getAppViewer().entities.remove(entity);
+    for (let i = 0; i < this.pointEntities.length; i++) {
+      if (this.pointEntities[i] === entity) {
+        this.pointEntities.splice(i, 1);
+        break;
+      }
+    }
   }
   clearEntities() {
-    // TODO
+    this.pointEntities.forEach(entity => {
+      this.appConf.getAppViewer().entities.remove(entity);
+    });
+
+    this.pointEntities = [];
   }
 
   ngAfterViewInit(): void {}

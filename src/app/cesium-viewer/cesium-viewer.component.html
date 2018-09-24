@@ -32,6 +32,8 @@
         [attr.aria-expanded]="!showGeometryEditor" aria-controls="geometryEditorCollapse"
         (click)="showGeometryEditor = !showGeometryEditor">
       </button>
+      <button id="screen-shot-btn" class="fa fa-camera toolbar-btn" (click)="takeScreenshot()">
+      </button>
       <mouse-coords class="mouse-coords"></mouse-coords>
   </div>
   <div id="layersListCollapse" [ngbCollapse]="!showLayersList"  class="collapsed-multi-margin">
@@ -45,5 +47,12 @@
                         (layerReset)="onLayerReset()"
                         [isLayerNameValid]="checkLayerName.bind(this)">
       </geometry-editor>
+  </div>
+  <div class="modal fade screenshot-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content" style="width: 48px">
+            <span class="fa fa-spinner fa-spin fa-3x"></span>
+        </div>
+    </div>
   </div>
 </div>
