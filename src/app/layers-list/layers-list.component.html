@@ -2,19 +2,21 @@
   <div class="layer-list row">
     <label class="layer-label ml-2">Static Layers</label>
     <mat-list class="container-fluid">
-      <mat-list-item *ngFor="let layer of staticLayers" class="row">
-        <label class="layer-label col-8">{{layer.getLayerMeta().layerName}}</label>
-        <mat-slide-toggle class="col-2" style="" [checked]='layer.isLayerVisible()' (change)='updateLayerVisbility(layer)'></mat-slide-toggle>
+      <mat-list-item *ngFor="let layer of staticLayers; let i = index" class="row" style="margin: 0; padding: 0;">
+        <label class="layer-label col-5">{{layer.getLayerMeta().layerName}}</label>
+        <mat-slide-toggle class="col-2 offset-2" style="" [checked]='layer.isLayerVisible()' (change)='updateLayerVisbility(layer)'></mat-slide-toggle>
+        <a class="fa fa-2x fa-map-marker layer-list-btn col-2" href="javascript:;" (click)="layer.moveToLayer()"></a>
       </mat-list-item>
     </mat-list>
   </div>
   <div class="layer-list row" *ngIf="editableLayers.length > 0">
     <label class="layer-label ml-2">User Layers</label>
     <mat-list class="container-fluid">
-      <mat-list-item *ngFor="let layer of editableLayers" class="row">
-        <label class="layer-label col-8">{{layer.getLayerMeta().layerName}}</label>
-        <mat-slide-toggle class="col-2" style="" [checked]='layer.isLayerVisible()' (change)='updateLayerVisbility(layer)'></mat-slide-toggle>
-        <a class="fa fa-2x fa-remove remove-layer-btn" href="javascript:;" (click)="onRemoveLayer(layer)"></a>
+      <mat-list-item *ngFor="let layer of editableLayers; let i = index" class="row" style="margin: 0; padding: 0;">
+        <label class="layer-label col-5">{{layer.getLayerMeta().layerName}}</label>
+        <mat-slide-toggle class="col-2 offset-2" [checked]='layer.isLayerVisible()' (change)='updateLayerVisbility(layer)'></mat-slide-toggle>
+        <a class="fa fa-2x fa-map-marker layer-list-btn col-2" href="javascript:;" (click)="layer.moveToLayer()"></a>
+        <a class="fa fa-2x fa-remove layer-list-btn" href="javascript:;" (click)="onRemoveLayer(i)"></a>
       </mat-list-item>
     </mat-list>
   </div>

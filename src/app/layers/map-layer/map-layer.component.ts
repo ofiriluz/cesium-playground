@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
   MapLayerProviderOptions,
   AcMapLayerProviderComponent,
@@ -18,10 +18,13 @@ import { LayerSource, LayerType } from 'src/app/models/layer-source.model';
 @Component({
   selector: 'map-layer',
   providers: [ViewerConfiguration, CesiumService],
-  templateUrl: 'map-layer.component.html'
+  encapsulation: ViewEncapsulation.None,
+  templateUrl: 'map-layer.component.html',
+  styleUrls: ['./map-layer.component.css']
 })
 export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   Cesium = Cesium;
+  MapLayerProviderOptions = MapLayerProviderOptions;
   sceneMode = SceneMode.SCENE3D;
   @ViewChild('mapLayer')
   mapLayer: AcMapComponent;
@@ -41,10 +44,10 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
       timeline: false,
       infoBox: true,
       fullscreenButton: true,
-      baseLayerPicker: true,
+      baseLayerPicker: false,
       animation: false,
       shouldAnimate: true,
-      homeButton: true,
+      homeButton: false,
       geocoder: true,
       scene3DOnly: true,
       navigationHelpButton: true,
@@ -57,12 +60,17 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
 
     viewerConf.viewerModifier = (viewer: any) => {
       this.appService.setAppViewer(viewer);
-
+      viewer.terrainProvider = Cesium.createWorldTerrain({
+        requestVertexNormals: true
+      });
+      viewer.scene.pickTranslucentDepth = true;
       viewer.scene.globe.depthTestAgainstTerrain = false;
       viewer.screenSpaceEventHandler.removeInputAction(
         Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
       );
       viewer.bottomContainer.remove();
+      viewer.shadowMap.softShadows = true;
+      viewer.shadowMap.darkness = 0.6;
     };
   }
 
@@ -86,7 +94,7 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     this.showMap = false;
   }
 
-  public isLayerVisible(): boolean{
+  public isLayerVisible(): boolean {
     return this.showMap;
   }
 

@@ -2,11 +2,11 @@
   background: rgba(100, 100, 100, 0.75)
 }
 .layer-label {
-  font: 15px arial, sans-serif;
+  font: 14px arial, sans-serif;
   color: white;
 }
 
-.remove-layer-btn {
+.layer-list-btn {
   text-decoration: none;
   background-color: none;
   color: rgb(233, 30, 99);

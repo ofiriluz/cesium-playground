@@ -24,28 +24,38 @@
 </map-layer>
 <div class="toolbar-left">
   <div class="toolbar-buttons">
-      <button id="layers-list-btn" class="fa fa-list-ul toolbar-btn"
+      <button id="home-btn" matTooltip="Go to Home" class="fa fa-home toolbar-btn"
+        (click)="goToHome()">
+      </button>
+      <button id="layers-list-btn" matTooltip="Layers List" class="fa fa-list-ul toolbar-btn"
         [attr.aria-expanded]="!showLayersList" aria-controls="layersListCollapse"
         (click)="showLayersList = !showLayersList">
       </button>
-      <button id="geometry-editor-btn" class="fa fa-edit toolbar-btn"
+      <button id="geometry-editor-btn" matTooltip="Geometry Map Editor" class="fa fa-edit toolbar-btn"
         [attr.aria-expanded]="!showGeometryEditor" aria-controls="geometryEditorCollapse"
-        (click)="showGeometryEditor = !showGeometryEditor">
+        (click)="showGeometryEditor = !showGeometryEditor;">
       </button>
-      <button id="screen-shot-btn" class="fa fa-camera toolbar-btn" (click)="takeScreenshot()">
+      <button id="shadows-btn" matTooltip="Layers Shadow" class="fa toolbar-btn" (click)="updateShadows()"
+        [ngClass]="{'fa-moon-o': currShadowMode === DisplayShadowMode.MODELS,
+                    'fa-sun-o': currShadowMode === DisplayShadowMode.NONE,
+                    'fa-star-o': currShadowMode === DisplayShadowMode.WORLD}">
       </button>
-      <mouse-coords class="mouse-coords"></mouse-coords>
+      <button id="screen-shot-btn" matTooltip="Take Snapshot" class="fa fa-camera toolbar-btn" (click)="takeScreenshot()">
+      </button>
+      <mouse-coords matTooltip="Information of current mouse coordinates" class="mouse-coords"></mouse-coords>
   </div>
   <div id="layersListCollapse" [ngbCollapse]="!showLayersList"  class="collapsed-multi-margin">
       <layers-list [staticLayers]="staticLayers"
-                   [editableLayers]="editableLayers"></layers-list>
+                   [editableLayers]="editableLayers"
+                   (removeLayer)="onEditableLayerRemoval($event)"></layers-list>
   </div>
   <div id="geometryEditorCollapse" [ngbCollapse]="!showGeometryEditor" class="collapsed-multi-margin">
       <geometry-editor  (geometryTypeChanged)="onGeometryTypeChanged($event)"
                         (entityAdded)="onEntityAdded($event)"
                         (layerSaved)="onLayerSaved($event)"
                         (layerReset)="onLayerReset()"
-                        [isLayerNameValid]="checkLayerName.bind(this)">
+                        [isLayerNameValid]="checkLayerName.bind(this)"
+                        [isEditorEnabled]="showGeometryEditor">
       </geometry-editor>
   </div>
   <div class="modal fade screenshot-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">

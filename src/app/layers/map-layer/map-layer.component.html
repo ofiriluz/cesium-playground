@@ -1,2 +1,8 @@
 <ac-map [sceneMode]="sceneMode" id="main-map" #mapLayer>
+  <ac-map-layer-provider
+    [provider]="MapLayerProviderOptions.OpenStreetMap"
+    [options]="{
+                url : 'https://a.tile.openstreetmap.org'
+        }">
+  </ac-map-layer-provider>
 </ac-map>

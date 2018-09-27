@@ -25,10 +25,13 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   polylineSource: LayerSource;
   polylinePositions: any[];
   polylineEntity: any;
+  polylinePointsEntity: any;
+  moveHandler: any;
 
   constructor(private appConf: AppConfigService) {
     this.polylinePositions = [];
     this.polylineEntity = null;
+    this.polylinePointsEntity = null;
   }
 
   public getLayerMeta(): LayerSource {
@@ -41,11 +44,16 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
 
   public showLayer(): void {
     this.polylineEntity.show = true;
+    this.polylinePointsEntity.show = true;
+    this.invalidateEntity();
     this.showPolyline = true;
   }
 
   public hideLayer(): void {
     this.polylineEntity.show = false;
+    this.polylinePointsEntity.show = false;
+    this.polylineEntity.removeAll();
+    this.polylinePointsEntity.removeAll();
     this.showPolyline = false;
   }
 
@@ -70,22 +78,9 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   }
 
   addEntity(entity: any) {
-    if (this.polylinePositions.length === 0) {
-      this.polylinePositions.push(entity);
-      return;
-    }
+    console.log('hi');
     this.polylinePositions.push(entity);
-    if (this.polylineEntity === null) {
-      this.polylineEntity = this.appConf.getAppViewer().entities.add({
-        polyline: {
-          positions: [this.polylinePositions[this.polylinePositions.length - 2], entity],
-          width: 5,
-          material: Cesium.Color.RED
-        }
-      });
-    } else {
-      this.polylineEntity.polyline.positions = this.polylinePositions;
-    }
+    this.invalidateEntity();
   }
 
   removeEntity(entity: any) {
@@ -97,13 +92,48 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
     }
   }
   clearEntities() {
-    this.appConf.getAppViewer().entities.remove(this.polylineEntity);
+    this.appConf.getAppViewer().scene.primitives.remove(this.polylineEntity);
+    this.appConf.getAppViewer().scene.primitives.remove(this.polylinePointsEntity);
     this.polylineEntity = null;
+    this.polylinePointsEntity = null;
     this.polylinePositions = [];
+  }
+
+  invalidateEntity() {
+    this.polylineEntity.removeAll();
+    this.polylinePointsEntity.removeAll();
+
+    for (let i = 0; i < this.polylinePositions.length; i++) {
+      console.log(this.polylinePositions[i]);
+      this.polylinePointsEntity.add(new Cesium.PointPrimitive({
+        position: this.polylinePositions[i],
+        pixelSize: 10,
+        color: Cesium.Color.BLUE,
+        outlineColor: Cesium.Color.BLACK,
+        outlineWidth: 2,
+        scaleByDistance : new Cesium.NearFarScalar(1.5e2, 1.25, 1.5e7, 0.5),
+        translucencyByDistance : new Cesium.NearFarScalar(1.5e2, 1.0, 1.5e7, 0.2)
+      }));
+
+      if (i >= 1) {
+        this.polylineEntity.add({
+          positions: [this.polylinePositions[i - 1], this.polylinePositions[i]],
+          color: Cesium.Color.WHITE,
+          width: 3
+        });
+      }
+    }
   }
 
   ngAfterViewInit(): void {}
   ngOnInit(): void {
+    this.polylinePointsEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.PointPrimitiveCollection());
+    this.polylineEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.PolylineCollection());
+
+    this.moveHandler = new Cesium.ScreenSpaceEventHandler(this.appConf.getAppViewer().scene.canvas);
+    this.moveHandler.setInputAction((click) => {
+      this.invalidateEntity();
+    }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     if (this.polylineSource !== undefined && Object.prototype.hasOwnProperty.call(this.polylineSource.layerProps, 'points')) {
       this.polylineSource.layerProps['points'].forEach(point => {
         this.addEntity(point);

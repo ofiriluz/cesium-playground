@@ -21,12 +21,19 @@ import { saveAs } from 'file-saver';
 declare var jquery: any;
 declare var $: any;
 
+export enum DisplayShadowMode {
+  NONE,
+  MODELS,
+  WORLD
+}
+
 @Component({
   selector: 'cesium-viewer',
   templateUrl: './cesium-viewer.component.html',
   styleUrls: ['./cesium-viewer.component.css']
 })
 export class CesiumViewerComponent implements OnInit, AfterViewInit {
+  DisplayShadowMode = DisplayShadowMode;
   public layerSources: LayerSource[];
   public LayerType = LayerType;
   @ViewChild('mapLayer')
@@ -37,6 +44,7 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   public showLayersList = false;
   public showGeometryEditor = false;
   editedLayer: EditableLayer;
+  currShadowMode = DisplayShadowMode.NONE;
 
   constructor(private layersService: LayersAPIService,
               private appConf: AppConfigService,
@@ -46,13 +54,16 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     this.editableLayers = new Array<EditableLayer>();
   }
 
-  ngAfterViewInit(): void {}
+  ngAfterViewInit(): void {
+    this.goToHome();
+  }
 
   ngOnInit(): void {
     // Load the layer sources from the server
     this.layersService.getLayersMeta().toPromise().then((layersData) => {
       this.layerSources = layersData['layers'] as LayerSource[];
     });
+    this.goToHome();
   }
 
   private getComponentFactory(type: string) {
@@ -103,10 +114,16 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   public onLayerSaved(layerName: string) {
     this.editedLayer.getLayerMeta().layerName = layerName;
     this.editableLayers.push(this.editedLayer);
+    this.editedLayer = null;
   }
 
   public onLayerReset() {
     this.editedLayer.clearEntities();
+  }
+
+  public onEditableLayerRemoval(layerIndex: number) {
+    this.editableLayers[layerIndex].clearEntities();
+    this.editableLayers.splice(layerIndex, 1);
   }
 
   public takeScreenshot() {
@@ -118,6 +135,31 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
       const currDate = new Date();
       saveAs(blob, 'Screenshot-' + currDate.getHours() + '-' + currDate.getMinutes() + '-' + currDate.getSeconds() + '.png');
       $('.modal').modal('hide');
+    });
+  }
+
+  public updateShadows() {
+    if (this.currShadowMode === DisplayShadowMode.NONE) {
+      this.appConf.getAppViewer().shadows = true;
+      this.appConf.getAppViewer().terrainShadows = Cesium.ShadowMode.RECEIVE_ONLY;
+      this.currShadowMode = DisplayShadowMode.MODELS;
+    } else if (this.currShadowMode === DisplayShadowMode.MODELS) {
+      this.appConf.getAppViewer().terrainShadows = Cesium.ShadowMode.ENABLED;
+      this.currShadowMode = DisplayShadowMode.WORLD;
+    } else {
+      this.appConf.getAppViewer().shadows = false;
+      this.currShadowMode = DisplayShadowMode.NONE;
+    }
+  }
+
+  public goToHome() {
+    // TEMP
+    const p = Cesium.Cartesian3.fromDegrees(34.91543, 32.49100, 62.91294144);
+    const ori = new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(180.0), Cesium.Math.toRadians(-20.0), Cesium.Math.toRadians(0.0));
+
+    this.appConf.getAppViewer().camera.flyTo({
+      destination: p,
+      orientation: ori
     });
   }
 }

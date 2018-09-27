@@ -39,6 +39,9 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
   public layerName = '';
   public layerSavedToViewer = false;
   public layerNameExists = false;
+  @Input()
+  public isEditorEnabled: boolean;
+  layerType = '';
 
   matcher = new LayerNameErrorStateMatcher();
   layerNameFormControl = new FormControl('', [
@@ -74,7 +77,7 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
     this.layerSaved.emit(this.layerName.trim());
     this.entities = [];
     this.layerSavedToViewer = true;
-    this.layerName = '';
+    this.geometryTypeChanged.emit(this.layerType);
   }
 
   public onLayerReset() {
@@ -82,24 +85,37 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
     this.layerReset.emit();
     this.entities = [];
     this.layerSavedToViewer = false;
-    this.layerName = '';
   }
 
   public onGeomTypeChanged(type) {
     if (this.cesiumSelectionHandler !== null) {
       this.cesiumSelectionHandler.destroy();
+      this.onLayerReset();
     }
     this.cesiumSelectionHandler = new Cesium.ScreenSpaceEventHandler(this.appConf.getAppViewer().scene.canvas);
     this.cesiumSelectionHandler.setInputAction((click) => {
-      const position = Cesium.Cartographic.fromCartesian(this.appConf.getAppViewer().scene.pickPosition(click.position));
-      const xyzPos = {x: Cesium.Math.toDegrees(position.longitude),
-                    y: Cesium.Math.toDegrees(position.latitude),
-                    z: position.height};
-      const fromDeg = new Cesium.Cartesian3.fromDegrees(xyzPos.x, xyzPos.y, xyzPos.z);
-      this.entityAdded.emit(fromDeg);
-      this.entities.push({wgs: xyzPos, deg: fromDeg, itm: this.geoService.convertWGSToITM(xyzPos.y, xyzPos.x)});
+      if (!this.isEditorEnabled) {
+        return;
+      }
+
+      const cartPos = new Cesium.Cartesian3();
+      this.appConf.getAppViewer().scene.pickPosition(click.position, cartPos);
+      const radwgsPos = Cesium.Cartographic.fromCartesian(cartPos);
+
+      const degwgsPos = {x: Cesium.Math.toDegrees(radwgsPos.longitude),
+                    y: Cesium.Math.toDegrees(radwgsPos.latitude),
+                    z: radwgsPos.height};
+
+      this.entities.push({wgs: degwgsPos, cart: cartPos, itm: this.geoService.convertWGSToITM(degwgsPos.y, degwgsPos.x)});
+
+      // This is to resolve clipping issue with map / tiles
+      const translatedWgs = radwgsPos;
+      translatedWgs.height += 0.75;
+      this.entityAdded.emit(Cesium.Cartographic.toCartesian(translatedWgs));
+
       this.layerSavedToViewer = false;
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
     this.geometryTypeChanged.emit(type.value);
+    this.layerType = type.value;
   }
 }

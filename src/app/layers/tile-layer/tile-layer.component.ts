@@ -62,20 +62,19 @@ export class TileLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   ngAfterViewInit(): void {
     this.tilesetInstance = new Cesium.Cesium3DTileset({
       url: this.tileSource.layerPath,
-      maximumScreenSpaceError: this.smartPhoneSrv.any() ? 8 : 1,
-      maximumNumberOfLoadedTiles: this.smartPhoneSrv.any() ? 10 : 1000
+      maximumScreenSpaceError: this.smartPhoneSrv.any() ? 3 : 1,
+      maximumNumberOfLoadedTiles: this.smartPhoneSrv.any() ? 300 : 1000
     });
-    this.tilesetInstance.allTilesLoaded.addEventListener(() => {
+    this.tilesetInstance.readyPromise.then(() => {
+      const centerCart = Cesium.Cartographic.fromCartesian(this.tilesetInstance.boundingSphere.center);
+      const y = new Cesium.Cartesian3(0, 0, -centerCart.height);
+      this.tilesetInstance.modelMatrix = Cesium.Matrix4.fromTranslation(y);
       this.layerBoundingSphehre = this.tilesetInstance.boundingSphere;
     });
 
     this.appConf.getAppViewer().scene.primitives.add(
       this.tilesetInstance
     );
-
-    // TEMP
-    const bs = new Cesium.BoundingSphere(Cesium.Cartesian3.fromDegrees(34.91930466, 32.48847722, 53.91294144), 1403.960694);
-    this.appConf.getAppViewer().camera.flyToBoundingSphere(bs);
   }
   ngOnInit(): void {
 

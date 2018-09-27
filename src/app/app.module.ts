@@ -25,7 +25,8 @@ import { SmartPhoneService } from 'src/app/services/smart-phone.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSlideToggleModule,
-  MatListModule, MatSelectModule, MatOptionModule, MatButtonModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+  MatListModule, MatSelectModule, MatOptionModule,
+  MatButtonModule, MatFormFieldModule, MatInputModule, MatTooltipModule } from '@angular/material';
 import { GeometryEditorComponent } from 'src/app/geometry-editor/geometry-editor.component';
 import { GeoConverterService } from 'src/app/services/geo-convertor.service';
 
@@ -61,6 +62,7 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatTooltipModule,
     ReactiveFormsModule
   ],
   providers: [

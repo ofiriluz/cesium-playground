@@ -1,8 +1,10 @@
 .toolbar-btn {
   width: 38px;
 	height: 38px;
-	border-width: 1px 1px 1px 0px;
-	border-color: black;
+  border-width: 1px 1px 1px 1px;
+  background-color: rgb(71, 66, 66);
+  color: white;
+	border-color: white;
   float: left;
   z-index: -1;
 }

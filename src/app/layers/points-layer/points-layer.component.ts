@@ -23,10 +23,10 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
   showPoints = true;
   @Input()
   pointsSource: LayerSource;
-  pointEntities: any[];
+  pointEntity: any;
 
   constructor(private appConf: AppConfigService) {
-    this.pointEntities = [];
+    this.pointEntity = null;
   }
 
   public getLayerMeta(): LayerSource {
@@ -34,20 +34,16 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
   }
 
   public getLayerEntity() {
-    return this.pointEntities;
+    return this.pointEntity;
   }
 
   public showLayer(): void {
-    this.pointEntities.forEach(entity => {
-      entity.show = true;
-    });
+    this.pointEntity.show = true;
     this.showPoints = true;
   }
 
   public hideLayer(): void {
-    this.pointEntities.forEach(entity => {
-      entity.show = false;
-    });
+    this.pointEntity.show = false;
     this.showPoints = false;
   }
 
@@ -58,50 +54,39 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
   public moveToLayer(): void {
     // Calculate the center of all the polyline points
     const center = {x: 0, y: 0, z: 0};
-    this.pointEntities.forEach(element => {
+    this.pointEntity.positions.forEach(element => {
       center.x += element.position.x;
       center.y += element.position.y;
       center.z += element.position.z;
     });
 
-    center.x /= this.pointEntities.length;
-    center.y /= this.pointEntities.length;
-    center.z /= this.pointEntities.length;
+    center.x /= this.pointEntity.positions.length;
+    center.y /= this.pointEntity.positions.length;
+    center.z /= this.pointEntity.positions.length;
 
     this.appConf.getAppViewer().flyTo(center);
   }
 
   addEntity(entity: any) {
-    this.pointEntities.push(this.appConf.getAppViewer().entities.add({
+    this.pointEntity.add(new Cesium.PointPrimitive({
       position: entity,
-      point: {
-        pixelSize : 15,
-        color : Cesium.Color.PURPLE,
-        outlineColor : Cesium.Color.BLACK,
-        outlineWidth : 2
-      }
+      pixelSize: 10,
+      color: Cesium.Color.RED,
+      outlineColor: Cesium.Color.YELLOW,
+      outlineWidth: 2
     }));
   }
   removeEntity(entity: any) {
-    this.appConf.getAppViewer().entities.remove(entity);
-    for (let i = 0; i < this.pointEntities.length; i++) {
-      if (this.pointEntities[i] === entity) {
-        this.pointEntities.splice(i, 1);
-        break;
-      }
-    }
+    this.pointEntity.remove(entity);
   }
   clearEntities() {
-    this.pointEntities.forEach(entity => {
-      this.appConf.getAppViewer().entities.remove(entity);
-    });
-
-    this.pointEntities = [];
+    this.appConf.getAppViewer().scene.primitives.remove(this.pointEntity);
+    this.pointEntity = null;
   }
 
   ngAfterViewInit(): void {}
   ngOnInit(): void {
-      console.log(this.pointsSource);
+      this.pointEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.PointPrimitiveCollection());
       if (this.pointsSource !== undefined
         && Object.prototype.hasOwnProperty.call(this.pointsSource.layerProps, 'points')) {
       this.pointsSource.layerProps['points'].forEach(point => {
