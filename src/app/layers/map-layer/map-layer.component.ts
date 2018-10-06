@@ -37,8 +37,19 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     this.layerSource.layerName = 'MAP';
     this.layerSource.layerPath = '';
     this.layerSource.layerType = LayerType.MAP;
-    const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
+    // const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
     const imageryModels = Cesium.createDefaultImageryProviderViewModels();
+
+    const m = new Cesium.Clock({
+      startTime: Cesium.JulianDate.fromIso8601('2018-01-01'),
+      currentTime: Cesium.JulianDate.fromIso8601('2018-12-31'),
+      stopTime: Cesium.JulianDate.fromIso8601('2018-04-04T12:00:00'),
+      clockRange: Cesium.ClockRange.LOOP_STOP,
+      clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
+      multiplier: 4e3,
+      shouldAnimate: !1
+    });
+
     viewerConf.viewerOptions = {
       selectionIndicator: true,
       timeline: false,
@@ -53,9 +64,10 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
       navigationHelpButton: true,
       navigationInstructionsInitiallyVisible: false,
       selectedImageryProviderViewModel: imageryModels[9],
-      terrainProviderViewModels: terrainModels,
-      selectedTerrainProviderViewModel: terrainModels[1],
-      orderIndependentTranslucency: false
+      // terrainProviderViewModels: terrainModels,
+      // selectedTerrainProviderViewModel: terrainModels[1],
+      orderIndependentTranslucency: false,
+      clockViewModel: new Cesium.ClockViewModel(m)
     };
 
     viewerConf.viewerModifier = (viewer: any) => {

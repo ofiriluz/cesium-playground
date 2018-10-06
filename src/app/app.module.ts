@@ -29,6 +29,8 @@ import { MatSlideToggleModule,
   MatButtonModule, MatFormFieldModule, MatInputModule, MatTooltipModule } from '@angular/material';
 import { GeometryEditorComponent } from 'src/app/geometry-editor/geometry-editor.component';
 import { GeoConverterService } from 'src/app/services/geo-convertor.service';
+import { TerrainLayerComponent } from 'src/app/layers/terrain-layer/terrain-layer.component';
+import { OrthoLayerComponent } from 'src/app/layers/ortho-layer/ortho-layer.component';
 
 const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
 
@@ -40,6 +42,8 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     TileLayerComponent,
     KMLLayerComponent,
     SHPLayerComponent,
+    TerrainLayerComponent,
+    OrthoLayerComponent,
     LayersListComponent,
     GeometryEditorComponent,
     PointsLayerComponent,

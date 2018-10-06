@@ -2,6 +2,8 @@ export enum LayerType {
   TILE,
   KML,
   SHP,
+  TERRAIN,
+  ORTHO,
   MAP,
   POINTS,
   POLYLINE

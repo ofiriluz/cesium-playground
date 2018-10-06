@@ -19,6 +19,18 @@
         [shpSource]="layerSource"
         [shpIndex]="i">
       </shp-layer>
+      <terrain-layer
+        *ngSwitchCase="LayerType.TERRAIN"
+        #layerComp
+        [terrainSource]="layerSource"
+        [terrainIndex]="i">
+      </terrain-layer>
+      <ortho-layer
+        *ngSwitchCase="LayerType.ORTHO"
+        #layerComp
+        [orthoSource]="layerSource"
+        [orthoIndex]="i">
+      </ortho-layer>
     </ng-container>
   </ng-container>
 </map-layer>

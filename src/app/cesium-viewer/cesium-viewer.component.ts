@@ -62,6 +62,8 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     // Load the layer sources from the server
     this.layersService.getLayersMeta().toPromise().then((layersData) => {
       this.layerSources = layersData['layers'] as LayerSource[];
+      console.log(this.layerSources);
+      console.log(LayerType);
     });
     this.goToHome();
   }
@@ -154,12 +156,16 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
 
   public goToHome() {
     // TEMP
-    const p = Cesium.Cartesian3.fromDegrees(34.91543, 32.49100, 62.91294144);
-    const ori = new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(180.0), Cesium.Math.toRadians(-20.0), Cesium.Math.toRadians(0.0));
-
+    const p = Cesium.Cartesian3.fromDegrees(34.7690232509, 32.0635270695, 300);
     this.appConf.getAppViewer().camera.flyTo({
-      destination: p,
-      orientation: ori
+      destination: p
     });
+    // const p = Cesium.Cartesian3.fromDegrees(34.91543, 32.49100, 62.91294144);
+    // const ori = new Cesium.HeadingPitchRoll(Cesium.Math.toRadians(180.0), Cesium.Math.toRadians(-20.0), Cesium.Math.toRadians(0.0));
+
+    // this.appConf.getAppViewer().camera.flyTo({
+    //   destination: p,
+    //   orientation: ori
+    // });
   }
 }

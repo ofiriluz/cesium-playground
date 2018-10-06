@@ -5,6 +5,10 @@ const path = require('path');
 // const shp2json = require('shp2json');
 const shapefile = require('shapefile');
 const shpjs = require('shpjs');
+const glob = require('glob');
+const sharp = require('sharp');
+// const tiffToPng = require('tiff-to-png');
+
 // const ftpClient = new ftp();
 // ftpClient.on('ready', () => {
 //   console.log('ftp connected');
@@ -19,6 +23,8 @@ const shpjs = require('shpjs');
 LAYER_TYPE_TILE = 0;
 LAYER_TYPE_KML = 1;
 LAYER_TYPE_SHP = 2;
+LAYER_TYPE_TERRAIN = 3;
+LAYER_TYPE_ORTHO = 4;
 
 // TEMP
 // APACHE_SERVER_IP = '192.168.170.156';
@@ -28,7 +34,7 @@ router.get('/layersMeta', (req, res, next) => {
   res.json({
     layers: [
       {
-        layerPath: 'http://127.0.0.1:3000/assets/RegScene/Cesium_Reg.json',
+        layerPath: 'http://127.0.0.1:3000/assets/TLV/Scene/Cesi.json',
         layerIndex: 3,
         layerType: LAYER_TYPE_TILE,
         layerName: '3D Tile Layer'
@@ -44,6 +50,18 @@ router.get('/layersMeta', (req, res, next) => {
         layerIndex: 1,
         layerType: LAYER_TYPE_SHP,
         layerName: 'Shape Layer'
+      },
+      {
+        layerPath: 'http://127.0.0.1:3000/assets/tiles',
+        layerIndex: 1,
+        layerType: LAYER_TYPE_TERRAIN,
+        layerName: 'Terrain Layer'
+      },
+      {
+        layerPath: 'http://127.0.0.1:3000/assets/imagery',
+        layerIndex: 1,
+        layerType: LAYER_TYPE_ORTHO,
+        layerName: 'Ortho Layer'
       }
     ]
   });
@@ -67,6 +85,49 @@ function writeFeatureCollection(source, out) {
     out.end();
   });
 }
+
+router.get('/orthoMeta', (req, res, next) => {
+  // TEMP
+  assetsIdx = req.query['orthoPath'].indexOf('assets');
+  prefix = req.query['orthoPath'].slice(0, assetsIdx);
+  orthoPathRl = path.join(__dirname, '../', req.query['orthoPath'].slice(assetsIdx));
+
+  // Go over the tif/tfw files in the dir and create the json
+  const orthoJson = {ortho: []};
+  glob(path.join(orthoPathRl, '*.tif'), {}, (err, files) => {
+    // pngTocreate = [];
+    files.forEach((tif) => {
+      const tifParsed = path.parse(tif);
+      const pngPath = path.join(orthoPathRl, tifParsed.name + '.png');
+      const tfwPath = path.join(orthoPathRl, tifParsed.name + '.tfw');
+      pngPostFix = path.join(tifParsed.dir, tifParsed.name + '.png');
+      pngPostFix = pngPostFix.slice(tif.indexOf('assets'));
+
+      if (!fs.existsSync(pngPath)) {
+        sharp(tif).toFile(pngPath);
+        // pngTocreate.push(path.normalize(tif));
+      }
+
+      // Read the tfw
+      data = fs.readFileSync(tfwPath, 'utf8').trim();
+
+      // Add the layer
+      // tif = tif.slice(tif.indexOf('assets'));
+      layer = {layerPath: prefix + pngPostFix, layerTFW: data.split('\n').map(x => parseFloat(x))};
+      orthoJson.ortho.push(layer);
+    })
+    // if (pngTocreate.length > 0) {
+    //   console.log(pngTocreate);
+    //   const conv = new tiffToPng({logLevel: 1})
+    //   conv.convertArray(pngTocreate, path.normalize(orthoPathRl)).then((out) => {
+    //     console.log(out);
+    //   });
+    // }
+
+
+    res.json(orthoJson);
+  })
+});
 
 router.get('/shpAsGeoJson', (req, res, next) => {
   // TEMP

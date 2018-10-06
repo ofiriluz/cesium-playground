@@ -66,9 +66,9 @@ export class TileLayerComponent implements AfterViewInit, OnInit, BaseLayer {
       maximumNumberOfLoadedTiles: this.smartPhoneSrv.any() ? 300 : 1000
     });
     this.tilesetInstance.readyPromise.then(() => {
-      const centerCart = Cesium.Cartographic.fromCartesian(this.tilesetInstance.boundingSphere.center);
-      const y = new Cesium.Cartesian3(0, 0, -centerCart.height);
-      this.tilesetInstance.modelMatrix = Cesium.Matrix4.fromTranslation(y);
+      // const centerCart = Cesium.Cartographic.fromCartesian(this.tilesetInstance.boundingSphere.center);
+      // const y = new Cesium.Cartesian3(0, 0, -centerCart.height);
+      // this.tilesetInstance.modelMatrix = Cesium.Matrix4.fromTranslation(y);
       this.layerBoundingSphehre = this.tilesetInstance.boundingSphere;
     });
 
