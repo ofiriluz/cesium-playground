@@ -1,7 +1,7 @@
 <form class="container geometry-editor">
   <div class="row">
     <mat-form-field class="col-12 mt-3 md-3 px-3">
-      <mat-select placeholder="Pick the geometry type" name="layerType" [(ngModel)]="geometryPick" (selectionChange)="onGeomTypeChanged($event)">
+      <mat-select placeholder="סוג גאומטריה" name="layerType" [(ngModel)]="geometryPick" (selectionChange)="onGeomTypeChanged($event)">
         <mat-option *ngFor="let geom of geometryTypes" [value]="geom">
           {{geom}}
         </mat-option>
@@ -10,26 +10,31 @@
   </div>
   <div class="row">
     <mat-form-field class="col-12 md-3 px-3">
-      <input matInput placeholder="Layer Name" name="layerName" type="text" (keyup)="updateLayerName($event)" [errorStateMatcher]="matcher" [formControl]="layerNameFormControl">
+      <input matInput placeholder="שם השכבה" name="layerName" type="text" (keyup)="updateLayerName($event)" [errorStateMatcher]="matcher" [formControl]="layerNameFormControl">
       <mat-error *ngIf="layerNameFormControl.hasError('required')"></mat-error>
     </mat-form-field>
   </div>
   <div class="row" *ngIf="layerNameExists">
     <label class="geometry-info-label col-12 md-4" style="color: red;">
-      <b>Layer name already exists.</b>
+      <b>שם השכבה כבר קיים.</b>
     </label>
   </div>
   <div class="row" *ngIf="entities.length === 0 && !layerSavedToViewer">
     <label class="geometry-info-label col-12 md-4">
-      Add the picked geometry to the map, info will be shown here
+      התחל להוסיף נקודות למפה בעזרת לחיצות על אזורים במפה.
     </label>
   </div>
   <div class="row" *ngIf="entities.length === 0 && layerSavedToViewer">
     <label class="geometry-info-label col-12 md-4">
-      Layer Saved!
+      השכבה נשמרה!
     </label>
   </div>
-  <mat-list *ngIf="entities.length > 0">
+  <div class="row" *ngIf="entities.length > 0">
+    <label class="geometry-info-label col-12 md-4">
+      מספר נקודות שנוספו : {{entities.length}}
+    </label>
+  </div>
+  <!-- <mat-list *ngIf="entities.length > 0">
     <mat-list-item *ngFor="let entity of entities; let i = index">
       <label class="row geometry-info-label h-100"><b>#{{i+1}}</b></label>
       <ul>
@@ -41,12 +46,12 @@
         </li>
       </ul>
     </mat-list-item>
-  </mat-list>
+  </mat-list> -->
   <div class="row-fluid">
     <button mat-flat-button color="accent" class="col-5 geometry-btn"
-    [disabled]="entities.length == 0" (click)="onLayerSave()">Save Layer</button>
+    [disabled]="entities.length == 0" (click)="onLayerSave()">שמור שכבה</button>
     <button mat-flat-button color="accent" class="col-5 pull-right geometry-btn"
-    (click)="onLayerReset()">Reset</button>
+    (click)="onLayerReset()">נקה</button>
   </div>
   <br/>
 </form>

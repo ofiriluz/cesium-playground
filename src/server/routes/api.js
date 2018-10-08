@@ -37,31 +37,31 @@ router.get('/layersMeta', (req, res, next) => {
         layerPath: 'http://127.0.0.1:3000/assets/TLV/Scene/Cesi.json',
         layerIndex: 3,
         layerType: LAYER_TYPE_TILE,
-        layerName: '3D Tile Layer'
+        layerName: 'שכבת תלת מימד'
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/kml/Layer KML.KML',
         layerIndex: 2,
         layerType: LAYER_TYPE_KML,
-        layerName: 'KML Layer'
+        layerName: 'שכבת דרכים KML'
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/shp/Layer SHP.shp',
         layerIndex: 1,
         layerType: LAYER_TYPE_SHP,
-        layerName: 'Shape Layer'
+        layerName: 'שכבת דרכים SHP'
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/tiles',
         layerIndex: 1,
         layerType: LAYER_TYPE_TERRAIN,
-        layerName: 'Terrain Layer'
+        layerName: 'מפת גבהים'
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/imagery',
         layerIndex: 1,
         layerType: LAYER_TYPE_ORTHO,
-        layerName: 'Ortho Layer'
+        layerName: 'אורתופוטו'
       }
     ]
   });

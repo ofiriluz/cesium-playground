@@ -43,6 +43,7 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   editableLayers: Array<EditableLayer>;
   public showLayersList = false;
   public showGeometryEditor = false;
+  isZooming = false;
   editedLayer: EditableLayer;
   currShadowMode = DisplayShadowMode.NONE;
 
@@ -69,23 +70,23 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   }
 
   private getComponentFactory(type: string) {
-    if (type === 'Points') {
+    if (type === 'נקודות') {
       return this.factoryResolve.resolveComponentFactory(PointsLayerComponent);
-    } else if (type === 'Polyline') {
+    } else if (type === 'מצולע פתוח') {
       return this.factoryResolve.resolveComponentFactory(PolylineLayerComponent);
     }
   }
 
   private handlePostCreation(component, type) {
-    if (type === 'Points') {
+    if (type === 'נקודות') {
       component.instance.pointsSource = new LayerSource();
-      component.instance.pointsSource.layerName = 'Points Layer';
+      component.instance.pointsSource.layerName = 'שכבת נקודות';
       component.instance.pointsSource.layerPath = '';
       component.instance.pointsSource.layerType = LayerType.POINTS;
       component.instance.pointsSource.layerProps = {};
-    } else if (type === 'Polyline') {
+    } else if (type === 'מצולע פתוח') {
       component.instance.polylineSource = new LayerSource();
-      component.instance.polylineSource.layerName = 'Polyline Layer';
+      component.instance.polylineSource.layerName = 'שכבת מצולע פתוח';
       component.instance.polylineSource.layerPath = '';
       component.instance.polylineSource.layerType = LayerType.POLYLINE;
       component.instance.polylineSource.layerProps = {};
@@ -152,6 +153,40 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
       this.appConf.getAppViewer().shadows = false;
       this.currShadowMode = DisplayShadowMode.NONE;
     }
+  }
+
+  public zoomIn() {
+    // TODO - Scaling factor for distance from ground
+    this.isZooming = true;
+    const zoomLambda = () => {
+      this.appConf.getAppViewer().scene.camera.zoomIn(10);
+      if (this.isZooming) {
+        setTimeout(() => {
+          zoomLambda();
+        }, 50);
+      }
+    };
+
+    zoomLambda();
+  }
+
+  public zoomOut() {
+    // TODO - Scaling factor for distance from ground
+    this.isZooming = true;
+    const zoomLambda = () => {
+      this.appConf.getAppViewer().scene.camera.zoomOut(10);
+      if (this.isZooming) {
+        setTimeout(() => {
+          zoomLambda();
+        }, 50);
+      }
+    };
+
+    zoomLambda();
+  }
+
+  public endZoom() {
+    this.isZooming = false;
   }
 
   public goToHome() {

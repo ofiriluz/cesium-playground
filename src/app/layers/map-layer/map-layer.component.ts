@@ -14,6 +14,7 @@ import { OnInit } from '@angular/core/src/metadata/lifecycle_hooks';
 import { AppConfigService } from 'src/app/services/app-config.service';
 import { BaseLayer } from 'src/app/layers/base-layer';
 import { LayerSource, LayerType } from 'src/app/models/layer-source.model';
+import * as moment from 'moment';
 
 @Component({
   selector: 'map-layer',
@@ -40,28 +41,30 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     // const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
     const imageryModels = Cesium.createDefaultImageryProviderViewModels();
 
+    const mom = moment();
+    const nextMonth = mom.clone().add(1, 'months');
     const m = new Cesium.Clock({
-      startTime: Cesium.JulianDate.fromIso8601('2018-01-01'),
-      currentTime: Cesium.JulianDate.fromIso8601('2018-12-31'),
-      stopTime: Cesium.JulianDate.fromIso8601('2018-04-04T12:00:00'),
-      clockRange: Cesium.ClockRange.LOOP_STOP,
+      startTime: Cesium.JulianDate.fromIso8601(mom.format('YYYY-MM-01')),
+      stopTime: Cesium.JulianDate.fromIso8601(nextMonth.format('YYYY-MM-01')),
+      currentTime: Cesium.JulianDate.fromIso8601(mom.utc(true).format()),
+      clockRange: Cesium.ClockRange.UNBOUNDED,
       clockStep: Cesium.ClockStep.SYSTEM_CLOCK_MULTIPLIER,
-      multiplier: 4e3,
+      multiplier: 1,
       shouldAnimate: !1
     });
 
     viewerConf.viewerOptions = {
       selectionIndicator: true,
-      timeline: false,
+      timeline: true,
       infoBox: true,
       fullscreenButton: true,
       baseLayerPicker: false,
-      animation: false,
+      animation: true,
       shouldAnimate: true,
       homeButton: false,
       geocoder: true,
       scene3DOnly: true,
-      navigationHelpButton: true,
+      navigationHelpButton: false,
       navigationInstructionsInitiallyVisible: false,
       selectedImageryProviderViewModel: imageryModels[9],
       // terrainProviderViewModels: terrainModels,

@@ -36,25 +36,29 @@
 </map-layer>
 <div class="toolbar-left">
   <div class="toolbar-buttons">
-      <button id="home-btn" matTooltip="Go to Home" class="fa fa-home toolbar-btn"
+      <button id="home-btn" matTooltip="בית" class="fa fa-home toolbar-btn"
         (click)="goToHome()">
       </button>
-      <button id="layers-list-btn" matTooltip="Layers List" class="fa fa-list-ul toolbar-btn"
+      <button id="layers-list-btn" matTooltip="רשימת שכבות" class="fa fa-list-ul toolbar-btn"
         [attr.aria-expanded]="!showLayersList" aria-controls="layersListCollapse"
         (click)="showLayersList = !showLayersList">
       </button>
-      <button id="geometry-editor-btn" matTooltip="Geometry Map Editor" class="fa fa-edit toolbar-btn"
+      <button id="geometry-editor-btn" matTooltip="הוסף שכבות גאומטריות" class="fa fa-edit toolbar-btn"
         [attr.aria-expanded]="!showGeometryEditor" aria-controls="geometryEditorCollapse"
         (click)="showGeometryEditor = !showGeometryEditor;">
       </button>
-      <button id="shadows-btn" matTooltip="Layers Shadow" class="fa toolbar-btn" (click)="updateShadows()"
+      <button id="shadows-btn" matTooltip="צל" class="fa toolbar-btn" (click)="updateShadows()"
         [ngClass]="{'fa-moon-o': currShadowMode === DisplayShadowMode.MODELS,
                     'fa-sun-o': currShadowMode === DisplayShadowMode.NONE,
                     'fa-star-o': currShadowMode === DisplayShadowMode.WORLD}">
       </button>
-      <button id="screen-shot-btn" matTooltip="Take Snapshot" class="fa fa-camera toolbar-btn" (click)="takeScreenshot()">
+      <button id="screen-shot-btn" matTooltip="צילום מסך" class="fa fa-camera toolbar-btn" (click)="takeScreenshot()">
       </button>
-      <mouse-coords matTooltip="Information of current mouse coordinates" class="mouse-coords"></mouse-coords>
+      <button id="zoom-in-btn" matTooltip="זום פנימה" class="fa fa-plus toolbar-btn" (mousedown)="zoomIn()" (mouseup)="endZoom()">
+      </button>
+      <button id="zoom-out-btn" matTooltip="זום אחורה" class="fa fa-minus toolbar-btn" (mousedown)="zoomOut()" (mouseup)="endZoom()">
+      </button>
+      <mouse-coords matTooltip="מידע על מיקום העכבר הנוכחי" class="mouse-coords"></mouse-coords>
   </div>
   <div id="layersListCollapse" [ngbCollapse]="!showLayersList"  class="collapsed-multi-margin">
       <layers-list [staticLayers]="staticLayers"

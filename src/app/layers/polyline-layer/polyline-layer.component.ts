@@ -13,6 +13,7 @@ import { AppConfigService } from 'src/app/services/app-config.service';
 import { BaseLayer } from 'src/app/layers/base-layer';
 import { LayerSource } from 'src/app/models/layer-source.model';
 import { EditableLayer } from 'src/app/layers/editable-layer';
+import { GeoConverterService } from 'src/app/services/geo-convertor.service';
 
 @Component({
   selector: 'polyline-layer',
@@ -25,13 +26,17 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   polylineSource: LayerSource;
   polylinePositions: any[];
   polylineEntity: any;
+  polylineLabelsEntity: any;
+  polylinePointsLabelsIndices: Array<number>;
   polylinePointsEntity: any;
   moveHandler: any;
 
-  constructor(private appConf: AppConfigService) {
+  constructor(private appConf: AppConfigService, private geoService: GeoConverterService) {
     this.polylinePositions = [];
     this.polylineEntity = null;
     this.polylinePointsEntity = null;
+    this.polylineLabelsEntity = null;
+    this.polylinePointsLabelsIndices = [];
   }
 
   public getLayerMeta(): LayerSource {
@@ -54,6 +59,7 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
     this.polylinePointsEntity.show = false;
     this.polylineEntity.removeAll();
     this.polylinePointsEntity.removeAll();
+    this.polylineLabelsEntity.removeAll();
     this.showPolyline = false;
   }
 
@@ -78,7 +84,6 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   }
 
   addEntity(entity: any) {
-    console.log('hi');
     this.polylinePositions.push(entity);
     this.invalidateEntity();
   }
@@ -94,18 +99,22 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   clearEntities() {
     this.appConf.getAppViewer().scene.primitives.remove(this.polylineEntity);
     this.appConf.getAppViewer().scene.primitives.remove(this.polylinePointsEntity);
+    this.appConf.getAppViewer().scene.primitives.remove(this.polylineLabelsEntity);
     this.polylineEntity = null;
     this.polylinePointsEntity = null;
+    this.polylineLabelsEntity = null;
+    this.polylinePointsLabelsIndices = [];
     this.polylinePositions = [];
   }
 
   invalidateEntity() {
     this.polylineEntity.removeAll();
     this.polylinePointsEntity.removeAll();
+    this.polylineLabelsEntity.removeAll();
 
+    let lastPoint = null;
     for (let i = 0; i < this.polylinePositions.length; i++) {
-      console.log(this.polylinePositions[i]);
-      this.polylinePointsEntity.add(new Cesium.PointPrimitive({
+      const point = this.polylinePointsEntity.add(new Cesium.PointPrimitive({
         position: this.polylinePositions[i],
         pixelSize: 10,
         color: Cesium.Color.BLUE,
@@ -116,12 +125,73 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
       }));
 
       if (i >= 1) {
-        this.polylineEntity.add({
+        // Add the line
+        const line = this.polylineEntity.add({
           positions: [this.polylinePositions[i - 1], this.polylinePositions[i]],
           color: Cesium.Color.WHITE,
           width: 3
         });
+
+        // Add the label
+        Cesium.Label.enableRightToLeftDetection = true;
+        const label = this.polylineLabelsEntity.add({
+          showBackground: true,
+          font: '16px arial, sans-serif',
+          horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
+          verticalOrigin: Cesium.VerticalOrigin.BASELINE,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          outlineColor : Cesium.Color.BLACK,
+          outlineWidth : 1.0,
+          backgroundColor : new Cesium.Color(0.165, 0.165, 0.165, 0.65)
+        });
+        label.del = { line: line, first: lastPoint, second: point };
+        label.position = Cesium.Cartesian3.lerp(lastPoint.position, point.position, 0.5, new Cesium.Cartesian3());
+
+        const pointsDistance = Cesium.Cartesian3.distance(lastPoint.position, point.position);
+        const p1Carto = Cesium.Cartographic.fromCartesian(
+          lastPoint.position,
+          Cesium.Ellipsoid.WGS84,
+          new Cesium.Cartographic()
+        );
+        const p2Carto = Cesium.Cartographic.fromCartesian(
+            point.position,
+            Cesium.Ellipsoid.WGS84,
+            new Cesium.Cartographic()
+        );
+        const length = p1Carto.height - p2Carto.height;
+        const horDistance = Math.sqrt(pointsDistance * pointsDistance - length * length);
+        label.text = 'מרחק : ' + pointsDistance.toFixed(2) + ' מ\'\n';
+        label.text += 'הפרש גובה : ' + Math.abs(length).toFixed(2) + ' מ\'\n';
+        label.text += 'מרחק אופקי : ' + horDistance.toFixed(2) + ' מ\'';
       }
+
+      lastPoint = point;
+    }
+
+    // Go over the hovered points
+    for (let i = 0; i < this.polylinePointsLabelsIndices.length; i++) {
+      const position = this.polylinePositions[this.polylinePointsLabelsIndices[i]];
+      const radwgsPos = Cesium.Cartographic.fromCartesian(position);
+      const degwgsPos = {x: Cesium.Math.toDegrees(radwgsPos.longitude),
+                    y: Cesium.Math.toDegrees(radwgsPos.latitude),
+                    z: radwgsPos.height};
+      const itm = this.geoService.convertWGSToITM(degwgsPos.y, degwgsPos.x);
+      Cesium.Label.enableRightToLeftDetection = true;
+      const label = this.polylineLabelsEntity.add({
+        showBackground: true,
+        font: '16px arial, sans-serif',
+        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        verticalOrigin: Cesium.VerticalOrigin.BASELINE,
+        disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        outlineColor : Cesium.Color.BLACK,
+        outlineWidth : 2.0,
+        backgroundColor : new Cesium.Color(0.8, 0.8, 0.0, 0.65),
+        fillColor : new Cesium.Color(0.0, 0.0, 0.9, 1.0),
+        position : position,
+        text : 'נקודה מספר : ' + this.polylinePointsLabelsIndices[i] + 1 + '/' + this.polylinePositions.length + '\n' +
+               'רשת ישראל החדשה : ' + itm.E.toFixed(2) + ', ' + itm.N.toFixed(2) + ', ' + position.z.toFixed(2) + '\n' +
+               'מערכת גאודטית עולמית : ' + degwgsPos.x.toFixed(5) + ', ' + degwgsPos.y.toFixed(5) + ', ' + degwgsPos.z.toFixed(2)
+      });
     }
   }
 
@@ -129,9 +199,26 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   ngOnInit(): void {
     this.polylinePointsEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.PointPrimitiveCollection());
     this.polylineEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.PolylineCollection());
+    this.polylineLabelsEntity = this.appConf.getAppViewer().scene.primitives.add(new Cesium.LabelCollection());
 
     this.moveHandler = new Cesium.ScreenSpaceEventHandler(this.appConf.getAppViewer().scene.canvas);
-    this.moveHandler.setInputAction((click) => {
+    this.moveHandler.setInputAction((move) => {
+      // Check if the mouse is under a point, if so, show the point label
+      // Convert to cartesian
+      const cartPos = new Cesium.Cartesian3();
+      this.appConf.getAppViewer().scene.pickPosition(move.endPosition, cartPos);
+
+      // Go over the existing points and check if a point exists
+      this.polylinePointsLabelsIndices = [];
+      for (let i = 0; i < this.polylinePositions.length; i++) {
+        const distance = Cesium.Cartesian3.distance(cartPos, this.polylinePositions[i]);
+        // Epsilon
+        if (distance < 2.0) {
+          // Found point, add it to the shownPoints indices list
+          this.polylinePointsLabelsIndices.push(i);
+        }
+      }
+
       this.invalidateEntity();
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     if (this.polylineSource !== undefined && Object.prototype.hasOwnProperty.call(this.polylineSource.layerProps, 'points')) {

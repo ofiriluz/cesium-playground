@@ -23,8 +23,8 @@ export class LayerNameErrorStateMatcher implements ErrorStateMatcher {
 })
 export class GeometryEditorComponent implements OnInit, AfterViewInit {
   Cesium = Cesium;
-  public geometryTypes = ['Points', 'Polyline'];
-  public geometryPick = 'None';
+  public geometryTypes = ['נקודות', 'מצולע פתוח'];
+  public geometryPick = 'לא נבחר';
   public entities = [];
   @Output()
   public geometryTypeChanged = new EventEmitter<string>();
@@ -109,9 +109,9 @@ export class GeometryEditorComponent implements OnInit, AfterViewInit {
       this.entities.push({wgs: degwgsPos, cart: cartPos, itm: this.geoService.convertWGSToITM(degwgsPos.y, degwgsPos.x)});
 
       // This is to resolve clipping issue with map / tiles
-      const translatedWgs = radwgsPos;
-      translatedWgs.height += 0.75;
-      this.entityAdded.emit(Cesium.Cartographic.toCartesian(translatedWgs));
+      // const translatedWgs = radwgsPos;
+      // translatedWgs.height += 0.75;
+      this.entityAdded.emit(Cesium.Cartographic.toCartesian(radwgsPos));
 
       this.layerSavedToViewer = false;
     }, Cesium.ScreenSpaceEventType.LEFT_CLICK);

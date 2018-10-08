@@ -1,8 +1,8 @@
 <div class="container-fluid mouse-coords-div" *ngIf="currentPosition !== null">
   <div class="row">
-    <label class="col-12 coords-label"><b>WGS84:</b> [{{currentPosition.wgs.x}}, {{currentPosition.wgs.y}}, {{currentPosition.wgs.z}}]</label>
+    <label class="col-12 coords-label">{{currentPosition.wgs.x}}, {{currentPosition.wgs.y}}, {{currentPosition.wgs.z}}<b> - מערכת גאודטית עולמית</b></label>
   </div>
   <div class="row">
-    <label class="col-12 coords-label"><b>ITM:</b> [{{currentPosition.itm.E.toFixed(2)}}, {{currentPosition.itm.N.toFixed(2)}}, {{currentPosition.deg.z.toFixed(2)}}]</label>
+    <label class="col-12 coords-label">{{currentPosition.itm.E.toFixed(2)}}, {{currentPosition.itm.N.toFixed(2)}}, {{currentPosition.deg.z.toFixed(2)}}<b> - רשת ישראל החדשה</b></label>
   </div>
 </div>
