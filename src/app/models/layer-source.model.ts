@@ -4,6 +4,8 @@ export enum LayerType {
   SHP,
   TERRAIN,
   ORTHO,
+  STREETS,
+  BUILDINGNUMBERS,
   MAP,
   POINTS,
   POLYLINE
@@ -15,4 +17,5 @@ export class LayerSource {
   public layerType: LayerType;
   public layerName: string;
   public layerProps: any;
+  public isShownAtStart: boolean;
 }

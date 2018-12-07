@@ -47,10 +47,14 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
     return this.polylineEntity;
   }
 
+  public getLayerBounds() {
+    return null;
+  }
+
   public showLayer(): void {
     this.polylineEntity.show = true;
     this.polylinePointsEntity.show = true;
-    this.invalidateEntity();
+    this.invalidateEntities();
     this.showPolyline = true;
   }
 
@@ -83,20 +87,21 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
     this.appConf.getAppViewer().flyTo(center);
   }
 
-  addEntity(entity: any) {
+  public addEntity(entity: any) {
     this.polylinePositions.push(entity);
-    this.invalidateEntity();
+    this.invalidateEntities();
   }
 
-  removeEntity(entity: any) {
+  public removeEntity(entity: any) {
     for (let i = 0; i < this.polylinePositions.length; i++) {
       if (this.polylinePositions[i] === entity) {
         this.polylinePositions.splice(i, 1);
         break;
       }
     }
+    this.invalidateEntities();
   }
-  clearEntities() {
+  public clearEntities() {
     this.appConf.getAppViewer().scene.primitives.remove(this.polylineEntity);
     this.appConf.getAppViewer().scene.primitives.remove(this.polylinePointsEntity);
     this.appConf.getAppViewer().scene.primitives.remove(this.polylineLabelsEntity);
@@ -105,9 +110,10 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
     this.polylineLabelsEntity = null;
     this.polylinePointsLabelsIndices = [];
     this.polylinePositions = [];
+    this.invalidateEntities();
   }
 
-  invalidateEntity() {
+  public invalidateEntities() {
     this.polylineEntity.removeAll();
     this.polylinePointsEntity.removeAll();
     this.polylineLabelsEntity.removeAll();
@@ -170,29 +176,68 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
 
     // Go over the hovered points
     for (let i = 0; i < this.polylinePointsLabelsIndices.length; i++) {
-      const position = this.polylinePositions[this.polylinePointsLabelsIndices[i]];
-      const radwgsPos = Cesium.Cartographic.fromCartesian(position);
-      const degwgsPos = {x: Cesium.Math.toDegrees(radwgsPos.longitude),
-                    y: Cesium.Math.toDegrees(radwgsPos.latitude),
-                    z: radwgsPos.height};
-      const itm = this.geoService.convertWGSToITM(degwgsPos.y, degwgsPos.x);
+      this.addPointLabel(i);
+    }
+  }
+
+  private addLineLabel(line, first, second): void {
+      // Add the label
       Cesium.Label.enableRightToLeftDetection = true;
       const label = this.polylineLabelsEntity.add({
         showBackground: true,
         font: '16px arial, sans-serif',
-        horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+        horizontalOrigin: Cesium.HorizontalOrigin.RIGHT,
         verticalOrigin: Cesium.VerticalOrigin.BASELINE,
         disableDepthTestDistance: Number.POSITIVE_INFINITY,
         outlineColor : Cesium.Color.BLACK,
-        outlineWidth : 2.0,
-        backgroundColor : new Cesium.Color(0.8, 0.8, 0.0, 0.65),
-        fillColor : new Cesium.Color(0.0, 0.0, 0.9, 1.0),
-        position : position,
-        text : 'נקודה מספר : ' + this.polylinePointsLabelsIndices[i] + 1 + '/' + this.polylinePositions.length + '\n' +
-               'רשת ישראל החדשה : ' + itm.E.toFixed(2) + ', ' + itm.N.toFixed(2) + ', ' + position.z.toFixed(2) + '\n' +
-               'מערכת גאודטית עולמית : ' + degwgsPos.x.toFixed(5) + ', ' + degwgsPos.y.toFixed(5) + ', ' + degwgsPos.z.toFixed(2)
+        outlineWidth : 1.0,
+        backgroundColor : new Cesium.Color(0.165, 0.165, 0.165, 0.65)
       });
-    }
+      label.del = { line: line, first: first, second: second };
+      label.position = Cesium.Cartesian3.lerp(first.position, second.position, 0.5, new Cesium.Cartesian3());
+
+      const pointsDistance = Cesium.Cartesian3.distance(first.position, second.position);
+      const p1Carto = Cesium.Cartographic.fromCartesian(
+        first.position,
+        Cesium.Ellipsoid.WGS84,
+        new Cesium.Cartographic()
+      );
+
+      const p2Carto = Cesium.Cartographic.fromCartesian(
+        second.position,
+        Cesium.Ellipsoid.WGS84,
+        new Cesium.Cartographic()
+      );
+      const length = p1Carto.height - p2Carto.height;
+      const horDistance = Math.sqrt(pointsDistance * pointsDistance - length * length);
+      label.text = 'מרחק : ' + pointsDistance.toFixed(2) + ' מ\'\n';
+      label.text += 'הפרש גובה : ' + Math.abs(length).toFixed(2) + ' מ\'\n';
+      label.text += 'מרחק אופקי : ' + horDistance.toFixed(2) + ' מ\'';
+  }
+
+  private addPointLabel(index: number): void {
+    const position = this.polylinePositions[this.polylinePointsLabelsIndices[index]];
+    const radwgsPos = Cesium.Cartographic.fromCartesian(position);
+    const degwgsPos = {x: Cesium.Math.toDegrees(radwgsPos.longitude),
+                  y: Cesium.Math.toDegrees(radwgsPos.latitude),
+                  z: radwgsPos.height};
+    const itm = this.geoService.convertWGSToITM(degwgsPos.y, degwgsPos.x);
+    Cesium.Label.enableRightToLeftDetection = true;
+    const label = this.polylineLabelsEntity.add({
+      showBackground: true,
+      font: '16px arial, sans-serif',
+      horizontalOrigin: Cesium.HorizontalOrigin.CENTER,
+      verticalOrigin: Cesium.VerticalOrigin.BASELINE,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY,
+      outlineColor : Cesium.Color.BLACK,
+      outlineWidth : 2.0,
+      backgroundColor : new Cesium.Color(0.8, 0.8, 0.0, 0.65),
+      fillColor : new Cesium.Color(0.0, 0.0, 0.9, 1.0),
+      position : position,
+      text : 'נקודה מספר : ' + (index + 1) + '/' + this.polylinePositions.length + '\n' +
+             'רשת ישראל החדשה : ' + itm.E.toFixed(2) + ', ' + itm.N.toFixed(2) + ', ' + position.z.toFixed(2) + '\n' +
+             'מערכת גאודטית עולמית : ' + degwgsPos.x.toFixed(5) + ', ' + degwgsPos.y.toFixed(5) + ', ' + degwgsPos.z.toFixed(2)
+    });
   }
 
   ngAfterViewInit(): void {}
@@ -219,7 +264,7 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
         }
       }
 
-      this.invalidateEntity();
+      this.invalidateEntities();
     }, Cesium.ScreenSpaceEventType.MOUSE_MOVE);
     if (this.polylineSource !== undefined && Object.prototype.hasOwnProperty.call(this.polylineSource.layerProps, 'points')) {
       this.polylineSource.layerProps['points'].forEach(point => {

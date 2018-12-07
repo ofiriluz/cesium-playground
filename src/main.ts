@@ -10,7 +10,7 @@ if (environment.production) {
 }
 
 Cesium.buildModuleUrl.setBaseUrl('/node_modules/cesium/Build/Cesium/');
-Cesium.BingMapsApi.defaultKey = 'AqDX2yBwC4viiXbZgKr4Vfv7ztERQ_IawGtGiK5Q87v-SNjT9eLZePVGmSdzegE8';
+Cesium.BingMapsApi.defaultKey = 'AkjRLVj9YxU1hVvcW-Pc_J5UuPXmDFHiARQvs-_9VeZKjnKHqoW_rgOQaYo0kZLV';
 platformBrowserDynamic().bootstrapModule(AppModule)
   .catch(err => console.log(err));
 

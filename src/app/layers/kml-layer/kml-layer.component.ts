@@ -38,6 +38,10 @@ export class KMLLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     return this.dataSource;
   }
 
+  public getLayerBounds() {
+    return null;
+  }
+
   public showLayer(): void {
     this.dataSource.show = true;
     this.showKml = true;

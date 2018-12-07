@@ -31,6 +31,18 @@
         [orthoSource]="layerSource"
         [orthoIndex]="i">
       </ortho-layer>
+      <streets-layer
+        *ngSwitchCase="LayerType.STREETS"
+        #layerComp
+        [streetsSource]="layerSource"
+        [streetsIndex]="i">
+      </streets-layer>
+      <building-numbers-layer
+        *ngSwitchCase="LayerType.BUILDINGNUMBERS"
+        #layerComp
+        [buildingNumbersSource]="layerSource"
+        [buildingNumbersIndex]="i">
+      </building-numbers-layer>
     </ng-container>
   </ng-container>
 </map-layer>

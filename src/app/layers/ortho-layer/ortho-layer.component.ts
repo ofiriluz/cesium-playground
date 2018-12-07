@@ -26,6 +26,7 @@ export class OrthoLayerComponent implements AfterViewInit, OnInit, BaseLayer {
   orthoSource: LayerSource;
   @Input()
   orthoIndex: number;
+  imageryRect: any;
 
   constructor(private appConf: AppConfigService, private layersService: LayersAPIService) {
 
@@ -37,6 +38,10 @@ export class OrthoLayerComponent implements AfterViewInit, OnInit, BaseLayer {
 
   public getLayerEntity() {
     return null;
+  }
+
+  public getLayerBounds() {
+    return this.imageryRect;
   }
 
   public showLayer(): void {
@@ -64,5 +69,8 @@ export class OrthoLayerComponent implements AfterViewInit, OnInit, BaseLayer {
         url: this.orthoSource.layerPath
       })
     );
+    this.imageryProvider.getViewableRectangle().then((rect) => {
+      this.imageryRect = rect;
+    });
   }
 }

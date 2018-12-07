@@ -25,6 +25,8 @@ LAYER_TYPE_KML = 1;
 LAYER_TYPE_SHP = 2;
 LAYER_TYPE_TERRAIN = 3;
 LAYER_TYPE_ORTHO = 4;
+LAYER_TYPE_STREETS = 5;
+LAYER_TYPE_BUILDINGNUMBERS = 6;
 
 // TEMP
 // APACHE_SERVER_IP = '192.168.170.156';
@@ -37,31 +39,56 @@ router.get('/layersMeta', (req, res, next) => {
         layerPath: 'http://127.0.0.1:3000/assets/TLV/Scene/Cesi.json',
         layerIndex: 3,
         layerType: LAYER_TYPE_TILE,
-        layerName: 'שכבת תלת מימד'
+        layerName: 'שכבת תלת מימד',
+        isShownAtStart: true
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/kml/Layer KML.KML',
         layerIndex: 2,
         layerType: LAYER_TYPE_KML,
-        layerName: 'שכבת דרכים KML'
+        layerName: 'שכבת דרכים KML',
+        isShownAtStart: true
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/shp/Layer SHP.shp',
         layerIndex: 1,
         layerType: LAYER_TYPE_SHP,
-        layerName: 'שכבת דרכים SHP'
+        layerName: 'שכבת דרכים SHP',
+        isShownAtStart: true
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/tiles',
         layerIndex: 1,
         layerType: LAYER_TYPE_TERRAIN,
-        layerName: 'מפת גבהים'
+        layerName: 'מפת גבהים',
+        isShownAtStart: true
       },
       {
         layerPath: 'http://127.0.0.1:3000/assets/imagery',
         layerIndex: 1,
         layerType: LAYER_TYPE_ORTHO,
-        layerName: 'אורתופוטו'
+        layerName: 'אורתופוטו',
+        isShownAtStart: true
+      },
+      {
+        layerPath: '',
+        layerIndex: 1,
+        layerType: LAYER_TYPE_STREETS,
+        layerName: 'רחובות',
+        layerProps: {
+          boundedLayer: 'אורתופוטו'
+        },
+        isShownAtStart: false
+      },
+      {
+        layerPath: '',
+        layerIndex: 1,
+        layerType: LAYER_TYPE_BUILDINGNUMBERS,
+        layerName: 'מספרי בניינים',
+        layerProps: {
+          boundedLayer: 'אורתופוטו'
+        },
+        isShownAtStart: false
       }
     ]
   });

@@ -56,6 +56,10 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+    this.staticLayers.changes.subscribe(() => {
+      // Set the static loaded layers on the app config
+      this.appConf.setLoadedLayers(this.staticLayers.toArray());
+    });
     this.goToHome();
   }
 
@@ -63,10 +67,9 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
     // Load the layer sources from the server
     this.layersService.getLayersMeta().toPromise().then((layersData) => {
       this.layerSources = layersData['layers'] as LayerSource[];
-      console.log(this.layerSources);
-      console.log(LayerType);
     });
-    this.goToHome();
+
+
   }
 
   private getComponentFactory(type: string) {
@@ -190,8 +193,26 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
   }
 
   public goToHome() {
+    // this.appConf.getAppViewer().scene.preRender.addEventListener(() => {
+    //   console.log('111');
+    //   const tileRecangles = [];
+    //   const tilesToRender = this.appConf.getAppViewer().scene.globe._surface.tileProvider._tilesToRenderByTextureCount;
+    //   if (Cesium.defined(tilesToRender)) {
+    //       for (let j = 0, len = tilesToRender.length; j < len; j++) {
+    //           const quadTrees = tilesToRender[j];
+    //           if (Cesium.defined(quadTrees)) {
+    //               for (let i = 0; i < quadTrees.length; i++) {
+    //                   tileRecangles.push(quadTrees[i]);
+    //               }
+    //           }
+    //       }
+    //   }
+    //   console.log('Tiles');
+    //   console.log(tileRecangles);
+    // }, this);
+
     // TEMP
-    const p = Cesium.Cartesian3.fromDegrees(34.7690232509, 32.0635270695, 300);
+    const p = Cesium.Cartesian3.fromDegrees(34.7690232509, 32.0635270695, 100);
     this.appConf.getAppViewer().camera.flyTo({
       destination: p
     });

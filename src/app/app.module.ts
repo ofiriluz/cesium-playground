@@ -31,6 +31,10 @@ import { GeometryEditorComponent } from 'src/app/geometry-editor/geometry-editor
 import { GeoConverterService } from 'src/app/services/geo-convertor.service';
 import { TerrainLayerComponent } from 'src/app/layers/terrain-layer/terrain-layer.component';
 import { OrthoLayerComponent } from 'src/app/layers/ortho-layer/ortho-layer.component';
+import { StreetsLayerComponent } from 'src/app/layers/streets-layer/streets-layer.component';
+import { MapBoxService } from 'src/app/services/mapbox-service';
+import { OverpassService } from 'src/app/services/overpass.service';
+import { BuildingNumbersLayerComponent } from 'src/app/layers/building-numbers-layer/building-numbers-layer.component';
 
 const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
 
@@ -44,6 +48,8 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     SHPLayerComponent,
     TerrainLayerComponent,
     OrthoLayerComponent,
+    StreetsLayerComponent,
+    BuildingNumbersLayerComponent,
     LayersListComponent,
     GeometryEditorComponent,
     PointsLayerComponent,
@@ -73,7 +79,9 @@ const appRoutes: Routes = [{ path: '', component: CesiumViewerComponent }];
     AppConfigService,
     LayersAPIService,
     SmartPhoneService,
-    GeoConverterService
+    GeoConverterService,
+    MapBoxService,
+    OverpassService
   ],
   bootstrap: [AppComponent],
   entryComponents: [PointsLayerComponent, PolylineLayerComponent]

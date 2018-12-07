@@ -39,6 +39,10 @@ export class TerrainLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     return null;
   }
 
+  public getLayerBounds() {
+    return null;
+  }
+
   public showLayer(): void {
     this.terrainProvider.show = true;
     this.showTerrain = true;
