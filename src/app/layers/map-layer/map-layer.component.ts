@@ -38,7 +38,7 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
     this.layerSource.layerName = 'MAP';
     this.layerSource.layerPath = '';
     this.layerSource.layerType = LayerType.MAP;
-    const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
+    // const terrainModels = Cesium.createDefaultTerrainProviderViewModels();
     const imageryModels = Cesium.createDefaultImageryProviderViewModels();
 
     const mom = moment();
@@ -67,8 +67,8 @@ export class MapLayerComponent implements AfterViewInit, OnInit, BaseLayer {
       navigationHelpButton: false,
       navigationInstructionsInitiallyVisible: false,
       selectedImageryProviderViewModel: imageryModels[9],
-      terrainProviderViewModels: terrainModels,
-      selectedTerrainProviderViewModel: terrainModels[1],
+      // terrainProviderViewModels: terrainModels,
+      // selectedTerrainProviderViewModel: terrainModels[1],
       orderIndependentTranslucency: false,
       clockViewModel: new Cesium.ClockViewModel(m)
     };

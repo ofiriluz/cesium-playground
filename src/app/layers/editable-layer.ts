@@ -5,4 +5,5 @@ export interface EditableLayer extends BaseLayer {
   removeEntity(entity: any);
   invalidateEntities();
   clearEntities();
+  destroyLayer();
 }

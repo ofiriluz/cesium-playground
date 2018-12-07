@@ -100,6 +100,9 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
   }
 
   public invalidateEntities() {
+    if (this.pointEntity == null || this.pointLabelsEntity == null) {
+      return;
+    }
     this.pointEntity.removeAll();
     this.pointLabelsEntity.removeAll();
 
@@ -150,6 +153,10 @@ export class PointsLayerComponent implements AfterViewInit, OnInit, EditableLaye
     this.pointLabelIndices = [];
     this.pointPositions = [];
     this.pointLabelsEntity = null;
+  }
+
+  public destroyLayer() {
+    this.moveHandler.destroy();
   }
 
   ngAfterViewInit(): void {}

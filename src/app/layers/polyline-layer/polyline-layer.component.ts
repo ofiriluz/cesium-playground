@@ -114,6 +114,10 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
   }
 
   public invalidateEntities() {
+    if (this.polylineEntity == null || this.polylinePointsEntity == null || this.polylineLabelsEntity == null) {
+      return;
+    }
+
     this.polylineEntity.removeAll();
     this.polylinePointsEntity.removeAll();
     this.polylineLabelsEntity.removeAll();
@@ -238,6 +242,10 @@ export class PolylineLayerComponent implements AfterViewInit, OnInit, EditableLa
              'רשת ישראל החדשה : ' + itm.E.toFixed(2) + ', ' + itm.N.toFixed(2) + ', ' + position.z.toFixed(2) + '\n' +
              'מערכת גאודטית עולמית : ' + degwgsPos.x.toFixed(5) + ', ' + degwgsPos.y.toFixed(5) + ', ' + degwgsPos.z.toFixed(2)
     });
+  }
+
+  public destroyLayer() {
+    this.moveHandler.destroy();
   }
 
   ngAfterViewInit(): void {}

@@ -129,6 +129,7 @@ export class CesiumViewerComponent implements OnInit, AfterViewInit {
 
   public onEditableLayerRemoval(layerIndex: number) {
     this.editableLayers[layerIndex].clearEntities();
+    this.editableLayers[layerIndex].destroyLayer();
     this.editableLayers.splice(layerIndex, 1);
   }
 
